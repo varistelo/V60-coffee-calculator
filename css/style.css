@@ -1,0 +1,741 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #8B4513, #D2691E);
+    min-height: 100vh;
+    padding: 15px;
+    color: #333;
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    text-align: center;
+    color: #6B4423;
+    margin-bottom: 5px;
+    font-size: 1.8rem;
+}
+
+.subtitle {
+    text-align: center;
+    color: #8B4513;
+    margin-bottom: 20px;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Reduzido de 15px para 10px para deixar elementos mais próximos */
+}
+
+label, .form-label {
+    font-weight: bold;
+    color: #6B4423;
+    margin-bottom: 3px;
+}
+
+input, select {
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #8B4513;
+}
+
+button {
+    background: linear-gradient(135deg, #8B4513, #A0522D);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.3s;
+    box-shadow: none; /* Removida a sombra em estado normal */
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(139, 69, 19, 0.15); /* Sombra muito sutil apenas no hover */
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+button[type="submit"] {
+    display: block;
+    margin: 10px auto;
+    width: 80%;
+    max-width: 300px;
+    padding: 12px 20px;
+}
+
+.radio-options {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    background-color: #f8f4f1;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.radio-option:hover {
+    background-color: #f0e6e0;
+}
+
+.radio-option input[type="radio"] {
+    margin-right: 8px;
+    cursor: pointer;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #8B4513;
+    border-radius: 50%;
+    outline: none;
+    position: relative;
+}
+
+.radio-option input[type="radio"]:checked::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #8B4513;
+}
+
+.radio-option label {
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+.result {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f8f8;
+    border-radius: 10px;
+    border: 1px solid #e0d0c5;
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.15);
+    display: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.result::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0px;
+    height: 100%;
+    background: #8B4513;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.result.show {
+    display: block;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.recipe-info {
+    margin-bottom: 12px; /* Reduzido de 15px */
+    text-align: center;
+}
+
+.recipe-info h3 {
+    color: #6B4423;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.recipe-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px; /* Reduzido de 10px */
+    margin-bottom: 8px; /* Reduzido de 10px */
+    border: 1px solid #e0d0c5;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.recipe-table th, .recipe-table td {
+    padding: 10px 8px;
+    text-align: center;
+    border: 1px solid #e0d0c5;
+}
+
+.recipe-table th {
+    background-color: #e9d8cc;
+    color: #6B4423;
+    font-weight: bold;
+    border-bottom: 2px solid #d4c0b0;
+}
+
+.recipe-table tr:nth-child(even) {
+    background-color: #f9f5f2;
+}
+
+.recipe-table tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.recipe-table tr:hover {
+    background-color: #f5eee8;
+}
+
+.recipe-table tr.final-step {
+    background-color: #f0e6e0;
+    font-style: italic;
+    border-top: 2px solid #e0d0c5;
+}
+
+/* Estilos compartilhados para basic-control e flavor-control */
+.basic-control,
+.flavor-control {
+    background-color: #f8f4f1;
+    padding: 12px; /* Reduzido de 15px para 12px */
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    margin-bottom: 10px; /* Reduzido de 15px para 10px */
+}
+
+.basic-control.collapsed,
+.flavor-control.collapsed {
+    padding: 12px 15px;
+    max-height: 50px;
+    overflow: hidden;
+}
+
+.basic-control.collapsed .basic-fields,
+.flavor-control.collapsed .slider-container,
+.flavor-control.collapsed .slider-values {
+    opacity: 0;
+    height: 0;
+    margin: 0;
+    visibility: hidden;
+}
+
+.basic-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.control-label {
+    font-weight: bold;
+    color: #6B4423;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toggle-btn {
+    background: #f0e6e0;
+    border: 1px solid #e0d0c5;
+    color: #8B4513;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s;
+    box-shadow: none;
+}
+
+.toggle-btn:hover {
+    background-color: #e9d8cc;
+    transform: translateY(0);
+    box-shadow: none;
+    color: #6B4423;
+}
+
+/* Estilos do Timer atualizados */
+.timer-container {
+    margin: 12px 0; /* Reduzido de 15px 0 */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px; /* Reduzido de 15px */
+}
+
+.timer-display-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.timer-display {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #6B4423;
+    text-align: center;
+    font-family: monospace;
+    background-color: #f9f5f2;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 2px solid #e9d8cc;
+    min-width: 180px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.countdown-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(107, 68, 35, 0.9);
+    color: white;
+    font-size: 3rem;
+    font-weight: bold;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    animation: pulse 1s infinite alternate;
+}
+
+.timer-display.complete {
+    background-color: #e9d8cc;
+    color: #8B4513;
+}
+
+.timer-display.time-warning {
+    background-color: #fcebdd;
+    color: #c85a17;
+    animation: pulse-warning 1s infinite alternate;
+}
+
+.timer-display.time-exceeded {
+    background-color: #ffeeee;
+    color: #cc3333;
+    animation: pulse-danger 0.8s infinite alternate;
+}
+
+.timer-display.step-highlight-green {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+/* Novos estilos para as tags de sabor */
+.flavor-tags-column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.flavor-tags-row {
+    display: flex;
+    gap: 8px;
+}
+
+.flavor-tag {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+    background-color: #f0e6e0;
+    color: #6B4423;
+    border: 1px solid #e9d8cc;
+    white-space: nowrap;
+}
+
+/* Estilos específicos para as novas tags */
+.flavor-tag-volume {
+    background-color: #e6f0f0;
+    border-color: #c9dbe0;
+    color: #336699;
+}
+
+.flavor-tag-type {
+    background-color: #f0e8e6;
+    border-color: #e0d0c9;
+    color: #8B4513;
+}
+
+@keyframes pulse-warning {
+    from { background-color: #fcebdd; box-shadow: 0 0 5px rgba(200, 90, 23, 0.5); }
+    to { background-color: #ffdcb5; box-shadow: 0 0 15px rgba(200, 90, 23, 0.8); }
+}
+
+@keyframes pulse-danger {
+    from { background-color: #ffeeee; box-shadow: 0 0 5px rgba(204, 51, 51, 0.5); }
+    to { background-color: #ffcccc; box-shadow: 0 0 15px rgba(204, 51, 51, 0.8); }
+}
+
+.timer-button {
+    display: block;
+    margin: 10px auto;
+    background: linear-gradient(135deg, #8B4513, #A0522D);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 80%;
+    max-width: 300px;
+    box-shadow: none; /* Removida a sombra */
+}
+
+/* Melhorias para os botões de controle do timer */
+.timer-options {
+    display: none; /* Inicialmente oculto */
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.reset-button {
+    background: linear-gradient(135deg, #d9534f, #c9302c);
+    max-width: 150px;
+    box-shadow: none; /* Removida a sombra */
+}
+
+.continue-button {
+    background: linear-gradient(135deg, #5cb85c, #449d44);
+    max-width: 150px;
+    box-shadow: none; /* Removida a sombra */
+}
+
+.reset-button:hover {
+    box-shadow: 0 2px 5px rgba(217, 83, 79, 0.15); /* Sombra muito sutil apenas no hover */
+}
+
+.continue-button:hover {
+    box-shadow: 0 2px 5px rgba(92, 184, 92, 0.15); /* Sombra muito sutil apenas no hover */
+}
+
+/* Melhor destaque visual para os estados das linhas */
+.step-row.active-step {
+    background-color: #e8c8a9 !important;
+    font-weight: bold;
+    border-left: 5px solid #8B4513;
+    animation: pulse 1.5s infinite alternate;
+    font-size: 110%;
+    position: relative;
+}
+
+.step-row.active-step::after {
+    content: "►";
+    position: absolute;
+    left: 5px;
+    color: #8B4513;
+    font-size: 0.8em;
+}
+
+.step-row.step-completed {
+    background-color: #f2f9ef !important;
+    color: #6B4423;
+    border-left: 3px solid #4CAF50;
+}
+
+/* Melhor animação para alertas visuais */
+@keyframes pulse-warning {
+    from { 
+        background-color: #fcebdd; 
+        box-shadow: 0 0 5px rgba(200, 90, 23, 0.5); 
+    }
+    to { 
+        background-color: #ffdcb5; 
+        box-shadow: 0 0 15px rgba(200, 90, 23, 0.8); 
+    }
+}
+
+@keyframes pulse-danger {
+    from { 
+        background-color: #ffeeee; 
+        box-shadow: 0 0 5px rgba(204, 51, 51, 0.5); 
+    }
+    to { 
+        background-color: #ffcccc; 
+        box-shadow: 0 0 15px rgba(204, 51, 51, 0.8);
+    }
+}
+
+.timer-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(139, 69, 19, 0.15); /* Sombra muito sutil apenas no hover */
+}
+
+.reset-button:hover {
+    box-shadow: 0 2px 5px rgba(217, 83, 79, 0.15); /* Sombra muito sutil apenas no hover */
+}
+
+.continue-button:hover {
+    box-shadow: 0 2px 5px rgba(92, 184, 92, 0.15); /* Sombra muito sutil apenas no hover */
+}
+
+.timer-button:disabled {
+    background: #A0522D;
+    opacity: 0.8;
+    cursor: default;
+}
+
+.timer-button.timer-finished {
+    background: linear-gradient(135deg, #2E8B57, #3CB371);
+}
+
+/* Estilos aprimorados para as linhas de etapas */
+.step-row.active-step {
+    background-color: #e8c8a9 !important;
+    font-weight: bold;
+    border-left: 5px solid #8B4513;
+    animation: pulse 1.5s infinite alternate;
+    font-size: 110%;
+}
+
+.step-row.step-completed {
+    background-color: #f2f9ef !important;
+    color: #6B4423;
+    border-left: 3px solid #4CAF50;
+}
+
+.step-row.step-highlight {
+    animation: flash 0.8s ease-in-out;
+}
+
+.step-row.step-remove-filter {
+    background-color: #ffeeee !important;
+    color: #cc3333;
+    font-weight: bold;
+    border-left: 5px solid #cc3333;
+    animation: pulse-danger 1s infinite alternate;
+}
+
+@keyframes pulse {
+    from { background-color: #e8c8a9; }
+    to { background-color: #f4e0cc; }
+}
+
+@keyframes flash {
+    0% { background-color: #e8c8a9; }
+    50% { background-color: #c9915e; color: white; }
+    100% { background-color: #e8c8a9; }
+}
+
+/* Ajustes para os controles da barra deslizante */
+.slider-container {
+    margin: 10px 0 8px; /* Reduzido de 15px 0 10px */
+    position: relative;
+}
+
+.slider-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #8B4513;
+    font-size: 0.9rem;
+}
+
+/* Estilo específico para sliders com apenas 3 opções */
+.tristate-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: #d2b48c;
+    outline: none;
+    margin: 8px 0;
+}
+
+.tristate-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #8B4513;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.tristate-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #8B4513;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.slider-values {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 0.85em;
+    color: #6B4423;
+    padding: 0 2px;
+}
+
+.slider-values span {
+    transition: all 0.3s;
+    padding: 3px 6px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.slider-values span.active {
+    background-color: #8B4513;
+    color: white;
+    font-weight: bold;
+}
+
+.left-value {
+    text-align: left;
+}
+
+.center-value {
+    text-align: center;
+}
+
+.right-value {
+    text-align: right;
+}
+
+.compact-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.compact-control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.compact-control-row span {
+    font-weight: bold;
+    color: #6B4423;
+}
+
+.compact-slider {
+    flex: 1;
+    margin: 0 10px;
+    height: 8px;
+    background: #d2b48c;
+    border-radius: 4px;
+    position: relative;
+}
+
+.compact-slider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    background: #8B4513;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 15px;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    input, select, button {
+        font-size: 15px;
+    }
+    
+    .recipe-table {
+        font-size: 13px;
+        border: none;
+        box-shadow: none;
+    }
+    
+    .recipe-table th, .recipe-table td {
+        padding: 6px 4px;
+    }
+    
+    .result {
+        box-shadow: 0 2px 8px rgba(139, 69, 19, 0.1);
+        padding: 15px;
+    }
+    
+    .flavor-tags-row {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    form {
+        gap: 8px; /* Ainda mais compacto em telas pequenas */
+    }
+    
+    .basic-control,
+    .flavor-control {
+        padding: 10px; /* Ainda mais compacto em telas pequenas */
+        margin-bottom: 8px; /* Ainda mais compacto em telas pequenas */
+    }
+    
+    .section-divider {
+        margin: 4px 0; /* Ainda mais compacto em telas pequenas */
+    }
+    
+    .section-divider.solid {
+        margin: 6px 0; /* Ainda mais compacto em telas pequenas */
+    }
+    
+    /* ...existing code... */
+}

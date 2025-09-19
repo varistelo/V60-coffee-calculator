@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Café V60 - Método 4:6</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Café V60</h1>
+        <p class="subtitle">Método 4:6</p>
+        
+        <form id="coffee-form">
+            <!-- Seção básica com quantidade e tipo de café -->
+            <div class="basic-control">
+                <p class="control-label">
+                    Volume e Espécies
+                    <button type="button" class="toggle-btn" title="Expandir/Recolher">&#9650;</button>
+                </p>
+                
+                <div class="basic-fields">
+                    <label for="coffee-quantity">Quantidade de Café (ml):</label>
+                    <input type="number" id="coffee-quantity" min="100" max="1000" value="300" required>
+                    
+                    <p class="form-label">Tipo de Café:</p>
+                    <div class="radio-options">
+                        <div class="radio-option">
+                            <input type="radio" id="arabica" name="coffee-type" value="arabica" checked>
+                            <label for="arabica">Arábica (15:1)</label>
+                        </div>
+                        
+                        <div class="radio-option">
+                            <input type="radio" id="conilon" name="coffee-type" value="conilon">
+                            <label for="conilon">Conilon (18:1)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-divider"></div>
+            
+            <!-- Seção de controle de sabor - já existente -->
+            <div class="flavor-control">
+                <p class="control-label">
+                    Controles de sabor
+                    <button type="button" class="toggle-btn" title="Expandir/Recolher">&#9650;</button>
+                </p>
+                
+                <div class="slider-container">
+                    <label for="acidity-slider">SABOR</label>
+                    <input type="range" id="acidity-slider" min="0" max="2" value="2" step="1" class="tristate-slider">
+                    <div class="slider-values">
+                        <span class="left-value">Ácido</span>
+                        <span class="center-value">Equilibrado</span>
+                        <span class="right-value active">Doce</span>
+                    </div>
+                </div>
+                
+                <div class="slider-container">
+                    <label for="strength-slider">INTENSIDADE</label>
+                    <input type="range" id="strength-slider" min="0" max="2" value="2" step="1" class="tristate-slider">
+                    <div class="slider-values">
+                        <span class="left-value">Leve</span>
+                        <span class="center-value">Médio</span>
+                        <span class="right-value active">Forte</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-divider solid"></div>
+
+            <button type="submit">Calcular Receita</button>
+        </form>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script src="js/calculator.js"></script>
+</body>
+</html>
