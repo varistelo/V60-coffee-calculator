@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora V60 - Método 4:6</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+    <meta name="description" content="Versão simplificada da calculadora para preparo de café utilizando o método V60 4:6 de Tetsu Kasuya.">
+</head>
+<body>
+    <div class="container">
+        <div class="header-container">
+            <img src="images/coffee-cup.svg" alt="Xícara de café" class="coffee-cup-illustration">
+            <div class="header-text">
+                <h1>Calculadora V60</h1>
+                <p class="subtitle">Método Kasuya 4:6</p>
+            </div>
+        </div>
+        
+        <form id="calculator-form">
+            <div class="basic-control">
+                <p class="control-label">
+                    Volume e Espécies
+                    <button type="button" class="toggle-btn" title="Expandir/Recolher">&#9650;</button>
+                </p>
+                
+                <div class="basic-fields">
+                    <label for="volume">Volume de Café (ml):</label>
+                    <input type="number" id="volume" min="100" max="1000" value="400" required>
+                    
+                    <p class="form-label">Tipo de Café:</p>
+                    <div class="radio-options">
+                        <div class="radio-option">
+                            <input type="radio" id="type-arabica" name="type" value="arabica" checked>
+                            <label for="type-arabica">Arábica (1:15)</label>
+                        </div>
+                        
+                        <div class="radio-option">
+                            <input type="radio" id="type-conilon" name="type" value="conilon">
+                            <label for="type-conilon">Conilon (1:18)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-divider"></div>
+            
+            <button type="submit">Calcular</button>
+        </form>
+        
+        <div id="result-container" class="result"></div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('calculator-form');
+            const resultDiv = document.getElementById('result-container');
+            
+            // Função para manipular o comportamento de expandir/recolher das seções
+            function toggleSectionHandler() {
+                const parentSection = this.closest('.basic-control, .flavor-control');
+                parentSection.classList.toggle('collapsed');
+                this.innerHTML = parentSection.classList.contains('collapsed') ? '&#9660;' : '&#9650;';
+            }
+            
+            // Inicializar os botões de toggle para recolher/expandir
+            const toggleButtons = document.querySelectorAll('.toggle-btn');
+            toggleButtons.forEach(btn => {
+                // Remover eventos antigos para evitar duplicação
+                btn.removeEventListener('click', toggleSectionHandler);
+                // Adicionar o novo handler
+                btn.addEventListener('click', toggleSectionHandler);
+            });
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const volume = parseFloat(document.getElementById('volume').value);
+                const type = document.querySelector('input[name="type"]:checked').value;
+                const ratio = type === 'arabica' ? 15 : 18;
+                
+                if (volume <= 0) {
+                    alert('Por favor, insira uma quantidade válida de café');
+                    return;
+                }
+                
+                // Calcular quantidade de café em gramas
+                const coffee = volume / ratio;
+                
+                // Divisão 40/60 (método Kasuya 4:6)
+                const firstPhase = volume * 0.4;
+                const secondPhase = volume * 0.6;
+                
+                // Despejos
+                const pour1 = Math.round(firstPhase * 0.5);
+                const pour2 = Math.round(firstPhase * 0.5);
+                const pour3 = Math.round(secondPhase * 0.4);
+                const pour4 = Math.round(secondPhase * 0.35);
+                const pour5 = Math.round(secondPhase * 0.25);
+                
+                // Formatar o tipo de café para exibição
+                const typeLabel = type === 'arabica' ? 'Arábica' : 'Conilon';
+                
+                resultDiv.innerHTML = `
+                    <div class="recipe-info">
+                        <h3>Café necessário: ${coffee.toFixed(1)}g</h3>
+                    </div>
+                    
+                    <div class="timer-container">
+                        <div class="timer-display-wrapper">
+                            <div class="timer-display">00:00</div>
+                        </div>
+                        <div class="flavor-tags-column">
+                            <div class="flavor-tags-row">
+                                <span class="flavor-tag flavor-tag-volume">${volume}ml</span>
+                                <span class="flavor-tag flavor-tag-type">${typeLabel}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <table class="recipe-table">
+                        <thead>
+                            <tr>
+                                <th>Etapa</th>
+                                <th>Despejo</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td>${pour1}ml</td><td>${pour1}ml</td></tr>
+                            <tr><td>2</td><td>${pour2}ml</td><td>${pour1 + pour2}ml</td></tr>
+                            <tr><td>3</td><td>${pour3}ml</td><td>${pour1 + pour2 + pour3}ml</td></tr>
+                            <tr><td>4</td><td>${pour4}ml</td><td>${pour1 + pour2 + pour3 + pour4}ml</td></tr>
+                            <tr><td>5</td><td>${pour5}ml</td><td>${pour1 + pour2 + pour3 + pour4 + pour5}ml</td></tr>
+                        </tbody>
+                    </table>
+                `;
+                
+                resultDiv.classList.add('show');
+            });
+        });
+    </script>
+    <script src="js/tags-debug.js"></script>
+</body>
+</html>
