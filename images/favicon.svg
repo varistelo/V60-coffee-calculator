@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <!-- Fundo circular -->
+  <circle cx="32" cy="32" r="30" fill="#FFF8F0"/>
+  <!-- Xícara de café (corpo principal) -->
+  <path d="M47,25H19c-1.1,0-2,0.9-2,2v10c0,6.6,5.4,12,12,12h8c6.6,0,12-5.4,12-12V27C49,25.9,48.1,25,47,25z" fill="#6c3428"/>
+  <!-- Parte superior da xícara mais clara -->
+  <path d="M47,25H19c-1.1,0-2,0.9-2,2v4h32v-4C49,25.9,48.1,25,47,25z" fill="#9c5043"/>
+  <!-- Alça da xícara -->
+  <path d="M49,30c2.2,0,4,1.8,4,4c0,2.2-1.8,4-4,4" fill="#9c5043" stroke="#6c3428" stroke-width="1"/>
+  <!-- Vapor (pequenas ondas) -->
+  <path d="M25,18c0,0,2-3,5-3s1,3,3,3s5-3,5-3" stroke="#6c3428" stroke-width="2" stroke-linecap="round"/>
+  <path d="M30,14c0,0,2-3,5-3s1,3,3,3s5-3,5-3" stroke="#6c3428" stroke-width="2" stroke-linecap="round"/>
+  <path d="M28,10c0,0,1-2,3-2s0.5,2,1.5,2s2.5-2,2.5-2" stroke="#6c3428" stroke-width="2" stroke-linecap="round"/>
+  <!-- Pires -->
+  <ellipse cx="32" cy="49" rx="15" ry="3" fill="#9c5043"/>
+</svg>

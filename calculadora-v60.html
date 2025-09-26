@@ -5,15 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora V60 - Método 4:6</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+    <meta name="description" content="Versão simplificada da calculadora para preparo de café utilizando o método V60 4:6 de Tetsu Kasuya.">
 </head>
 <body>
     <div class="container">
-        <h1>Calculadora V60</h1>
-        <p class="subtitle">Método 4:6</p>
+        <div class="header-container">
+            <img src="images/coffee-cup.svg" alt="Xícara de café" class="coffee-cup-illustration">
+            <div class="header-text">
+                <h1>Calculadora V60</h1>
+                <p class="subtitle">Método Kasuya 4:6</p>
+            </div>
+        </div>
         
         <form id="calculator-form">
             <div class="basic-control">
-                <p class="control-label">Volume e Espécies</p>
+                <p class="control-label">
+                    Volume e Espécies
+                    <button type="button" class="toggle-btn" title="Expandir/Recolher">&#9650;</button>
+                </p>
                 
                 <div class="basic-fields">
                     <label for="volume">Volume de Café (ml):</label>
@@ -36,7 +46,7 @@
             
             <div class="section-divider"></div>
             
-            <button type="submit">Calcular Receita</button>
+            <button type="submit">Calcular</button>
         </form>
         
         <div id="result-container" class="result"></div>
@@ -46,6 +56,22 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('calculator-form');
             const resultDiv = document.getElementById('result-container');
+            
+            // Função para manipular o comportamento de expandir/recolher das seções
+            function toggleSectionHandler() {
+                const parentSection = this.closest('.basic-control, .flavor-control');
+                parentSection.classList.toggle('collapsed');
+                this.innerHTML = parentSection.classList.contains('collapsed') ? '&#9660;' : '&#9650;';
+            }
+            
+            // Inicializar os botões de toggle para recolher/expandir
+            const toggleButtons = document.querySelectorAll('.toggle-btn');
+            toggleButtons.forEach(btn => {
+                // Remover eventos antigos para evitar duplicação
+                btn.removeEventListener('click', toggleSectionHandler);
+                // Adicionar o novo handler
+                btn.addEventListener('click', toggleSectionHandler);
+            });
             
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -115,5 +141,6 @@
             });
         });
     </script>
+    <script src="js/tags-debug.js"></script>
 </body>
 </html>

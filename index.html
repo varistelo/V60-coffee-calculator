@@ -2,14 +2,27 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Café V60 - Método 4:6</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V60 - Coffee Calculator</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="images/v60.svg" type="image/svg+xml">
+    <meta name="description" content="Calculadora para preparo de café utilizando o método V60 4:6 de Tetsu Kasuya.">
 </head>
 <body>
     <div class="container">
-        <h1>Calculadora de Café V60</h1>
-        <p class="subtitle">Método 4:6</p>
+        <div class="header-container">
+            <img src="images/v60.svg" alt="V60 dripper" class="coffee-cup-illustration">
+            <div class="header-text">
+                <p class="method-label">Método 4:6</p>
+                <h1>Calculadora de Café V60</h1>
+                <div class="subtitle-tags">
+                    <span class="info-tag volume-tag" id="volume-display">300ml</span>
+                    <span class="info-tag type-tag" id="type-display">Arábica</span>
+                    <span class="info-tag flavor-tag-taste" id="taste-display">Doce</span>
+                    <span class="info-tag flavor-tag-strength" id="strength-display">Forte</span>
+                </div>
+            </div>
+        </div>
         
         <form id="coffee-form">
             <!-- Seção básica com quantidade e tipo de café -->
@@ -70,7 +83,7 @@
             
             <div class="section-divider solid"></div>
 
-            <button type="submit">Calcular Receita</button>
+            <button type="submit">Calcular</button>
         </form>
 
         <div id="result" class="result"></div>

@@ -3,8 +3,45 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultDiv = document.getElementById('result');
     const aciditySlider = document.getElementById('acidity-slider');
     const strengthSlider = document.getElementById('strength-slider');
+    
+    // Função para atualizar as tags informativas no subtítulo
+    function updateSubtitleTags() {
+        const coffeeVolume = document.getElementById('coffee-quantity').value;
+        const coffeeType = document.querySelector('input[name="coffee-type"]:checked').value;
+        const acidityValue = parseInt(aciditySlider.value);
+        const strengthValue = parseInt(strengthSlider.value);
+        
+        // Atualizar volume
+        const volumeTag = document.getElementById('volume-display');
+        volumeTag.textContent = `${coffeeVolume}ml`;
+        volumeTag.classList.add('visible');
+        
+        // Atualizar tipo de café
+        const typeTag = document.getElementById('type-display');
+        typeTag.textContent = coffeeType === 'arabica' ? 'Arábica' : 'Conilon';
+        typeTag.classList.add('visible');
+        
+        // Atualizar sabor
+        const tasteLabels = ['Ácido', 'Equilibrado', 'Doce'];
+        const tasteTag = document.getElementById('taste-display');
+        tasteTag.textContent = tasteLabels[acidityValue];
+        tasteTag.classList.add('visible');
+        
+        // Atualizar intensidade
+        const strengthLabels = ['Leve', 'Médio', 'Forte'];
+        const strengthTag = document.getElementById('strength-display');
+        strengthTag.textContent = strengthLabels[strengthValue];
+        strengthTag.classList.add('visible');
+    }
+    
+    // Função para manipular o comportamento de expandir/recolher das seções
+    function toggleSectionHandler() {
+        const parentSection = this.closest('.basic-control, .flavor-control');
+        parentSection.classList.toggle('collapsed');
+        this.innerHTML = parentSection.classList.contains('collapsed') ? '&#9660;' : '&#9650;';
+    }
 
-    // Adiciona visualização em tempo real dos valores
+    // Adiciona visualização em tempo real dos valores dos sliders
     aciditySlider.addEventListener('input', function() {
         updateSliderLabels(this, ['Ácido', 'Equilibrado', 'Doce']);
     });
@@ -13,9 +50,13 @@ document.addEventListener('DOMContentLoaded', function() {
         updateSliderLabels(this, ['Leve', 'Médio', 'Forte']);
     });
     
+    // Tags só aparecem após calcular - não precisam de listeners em tempo real
+    
     // Inicializa visualização dos sliders
     updateSliderLabels(aciditySlider, ['Ácido', 'Equilibrado', 'Doce']);
     updateSliderLabels(strengthSlider, ['Leve', 'Médio', 'Forte']);
+    
+    // NÃO inicializar as tags - elas só aparecem após calcular
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -30,7 +71,20 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        calculateRecipe(coffeeVolume, coffeeType, acidityValue, strengthValue);
+        // Adicionar loading state
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        submitButton.textContent = 'Calculando...';
+        submitButton.classList.add('loading');
+        
+        // Simular pequeno delay para mostrar o loading (melhor UX)
+        setTimeout(() => {
+            calculateRecipe(coffeeVolume, coffeeType, acidityValue, strengthValue);
+            
+            // Remover loading state
+            submitButton.textContent = originalText;
+            submitButton.classList.remove('loading');
+        }, 300);
     });
 
     function calculateRecipe(coffeeVolume, coffeeType, acidityOption, strengthOption) {
@@ -181,12 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="flavor-tags-column">
                     <div class="flavor-tags-row">
-                        <span class="flavor-tag flavor-tag-volume">${totalWater}ml</span>
-                        <span class="flavor-tag flavor-tag-type">${typeLabel}</span>
-                    </div>
-                    <div class="flavor-tags-row">
-                        <span class="flavor-tag flavor-tag-${acidityValue}">${flavorLabel}</span>
-                        <span class="flavor-tag flavor-tag-${strengthValue}">${strengthLabel}</span>
+                        <span class="flavor-tag volume-counter" id="volume-counter">0ml</span>
                     </div>
                 </div>
             </div>
@@ -216,18 +265,36 @@ document.addEventListener('DOMContentLoaded', function() {
         
         resultDiv.classList.add('show');
         
+        // Mostrar as tags informativas após o cálculo
+        updateSubtitleTags();
+        
         // Recolher os controles após calcular o resultado
         const basicControl = document.querySelector('.basic-control');
         const flavorControl = document.querySelector('.flavor-control');
+        
+        // Adicionar classe collapsed aos controles
         basicControl.classList.add('collapsed');
         flavorControl.classList.add('collapsed');
         
-        // Atualizar ícones de todos os botões toggle
+        // Atualizar ícones de todos os botões toggle e garantir que funcionem
         const toggleButtons = document.querySelectorAll('.toggle-btn');
         toggleButtons.forEach(btn => {
             const parentSection = btn.closest('.basic-control, .flavor-control');
-            btn.innerHTML = parentSection.classList.contains('collapsed') ? '&#9660;' : '&#9650;';
+            
+            // Atualizar o ícone para refletir o estado colapsado
+            btn.innerHTML = '&#9660;'; // seta para baixo
+            
+            // Limpar qualquer handler antigo para evitar duplicação
+            btn.removeEventListener('click', toggleSectionHandler);
+            
+            // Adicionar o novo handler de evento
+            btn.addEventListener('click', toggleSectionHandler);
         });
+        
+        // Rolar para o resultado após um pequeno atraso para garantir que a animação ocorra
+        setTimeout(() => {
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
         
         // Adicionar botão para expandir/recolher controles de sabor
         const controlLabel = document.querySelector('.control-label');
@@ -300,7 +367,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     // Mostrar contagem regressiva para início
                     const countdownOverlay = document.getElementById('countdown-overlay');
+                    const timerDisplay = document.querySelector('.timer-display');
+                    
                     countdownOverlay.style.display = 'flex';
+                    timerDisplay.style.opacity = '0'; // Esconder o timer zerado
                     
                     let countdown = 3;
                     countdownOverlay.textContent = countdown;
@@ -312,6 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         } else {
                             clearInterval(countdownInterval);
                             countdownOverlay.style.display = 'none';
+                            timerDisplay.style.opacity = '1'; // Mostrar o timer novamente
                             
                             // Iniciar o timer após contagem regressiva
                             timerInstance = startBrewingTimer(pourSteps, removeFilterTime, 0, -1, function(seconds) {
@@ -587,13 +658,27 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Usar a etapa fornecida ou calcular com base no tempo
         let currentStep = startFromStep;
+        const volumeCounter = document.getElementById('volume-counter');
+        
+        // Inicializar o contador de volume
+        if (volumeCounter) {
+            if (startFromSeconds === 0) {
+                volumeCounter.textContent = '0ml';
+            } else if (currentStep >= 0 && currentStep < steps.length) {
+                // Se estamos retomando, mostrar o volume TOTAL da etapa atual
+                volumeCounter.textContent = `${steps[currentStep].total}ml`;
+            } else {
+                // Para outros casos, inicializar como 0
+                volumeCounter.textContent = '0ml';
+            }
+        }
         
         // Se estamos começando do zero, sempre destacar a primeira linha
         if (startFromSeconds === 0) {
             currentStep = 0;  // Sempre começa na primeira etapa
             if (rows.length > 0) {
                 rows[0].classList.add('active-step');
-                flashGreen(timerDisplay);
+                flashGreen(timerDisplay, 0, steps);
                 // Usar o som de sino/início para o primeiro step
                 playBeep(1, 'bell');
             }
@@ -640,24 +725,59 @@ document.addEventListener('DOMContentLoaded', function() {
         
         let seconds = startFromSeconds;
         
-        // Função para criar o efeito de piscar em verde
-        function flashGreen(element) {
-            element.classList.add('step-highlight-green');
-            setTimeout(() => {
-                element.classList.remove('step-highlight-green');
-                setTimeout(() => {
+        // Função para criar o efeito de piscar em verde por 10 segundos
+        function flashGreen(element, stepIndex, stepPours) {
+            let flashCount = 0;
+            const maxFlashes = 33; // 10 segundos com intervalo de ~300ms = 33 piscadas
+            
+            // Pegar o volume TOTAL do step atual (não só o despejo)
+            const stepVolume = stepPours && stepPours[stepIndex] ? stepPours[stepIndex].total : 0;
+            // Pegar o volume total do step anterior (onde começar a contagem)
+            const previousStepVolume = stepIndex > 0 && stepPours[stepIndex - 1] ? stepPours[stepIndex - 1].total : 0;
+            
+            const volumeCounter = document.getElementById('volume-counter');
+            let currentVolume = previousStepVolume;
+            
+            // Reset do contador de volume para o valor do step anterior
+            if (volumeCounter) {
+                volumeCounter.textContent = `${previousStepVolume}ml`;
+                volumeCounter.classList.add('counting'); // Adicionar classe de destaque
+                currentVolume = previousStepVolume;
+            }
+            
+            console.log('Iniciando flashGreen para step', stepIndex, 'de', previousStepVolume, 'ml até', stepVolume, 'ml');
+            
+            const flashInterval = setInterval(() => {
+                // Alternar entre destacado e normal
+                if (flashCount % 2 === 0) {
                     element.classList.add('step-highlight-green');
-                    setTimeout(() => {
-                        element.classList.remove('step-highlight-green');
-                        setTimeout(() => {
-                            element.classList.add('step-highlight-green');
-                            setTimeout(() => {
-                                element.classList.remove('step-highlight-green');
-                            }, 300);
-                        }, 300);
-                    }, 300);
-                }, 300);
-            }, 300);
+                } else {
+                    element.classList.remove('step-highlight-green');
+                }
+                
+                // Incrementar o volume durante os primeiros 10 segundos
+                if (volumeCounter && flashCount < maxFlashes && stepVolume > 0) {
+                    // Calcular incremento baseado no tempo decorrido
+                    const progress = (flashCount + 1) / maxFlashes;
+                    // Interpolar entre o volume anterior e o volume total atual
+                    currentVolume = Math.round(previousStepVolume + (stepVolume - previousStepVolume) * progress);
+                    volumeCounter.textContent = `${currentVolume}ml`;
+                }
+                
+                flashCount++;
+                
+                // Parar após 10 segundos (33 piscadas)
+                if (flashCount >= maxFlashes) {
+                    clearInterval(flashInterval);
+                    element.classList.remove('step-highlight-green');
+                    
+                    // Remover classe de destaque e garantir volume final correto
+                    if (volumeCounter && stepVolume > 0) {
+                        volumeCounter.classList.remove('counting');
+                        volumeCounter.textContent = `${stepVolume}ml`;
+                    }
+                }
+            }, 300); // Piscar a cada 300ms para durar 10 segundos
         }
         
         let timer = setInterval(() => {
@@ -683,6 +803,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
+            // Atualizar o contador de volume baseado na etapa atual
+            // (não fazer nada aqui - deixar o flashGreen gerenciar o contador)
+            
             // Se mudou de etapa, atualizar a interface
             if (newStep !== currentStep && newStep >= 0) {
                 // Marcar etapa anterior como concluída
@@ -698,11 +821,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Verificar se é a última etapa (remover filtro)
                     if (newStep === rows.length - 1) {
                         rows[newStep].classList.add('step-remove-filter');
+                        
                         // Tocar o som de beep 3 vezes para o step final
                         playBeep(3, 'regular');
+                        
+                        // Para a última etapa, manter o volume total final
+                        if (volumeCounter && steps.length > 0) {
+                            const finalVolume = steps[steps.length - 1].total;
+                            volumeCounter.textContent = `${finalVolume}ml`;
+                        }
                     } else {
                         // Efeito de piscar em verde para as outras etapas
-                        flashGreen(timerDisplay);
+                        flashGreen(timerDisplay, newStep, steps);
                         // Tocar o som de beep 1 vez para steps regulares
                         playBeep(1, 'regular');
                     }
@@ -790,16 +920,244 @@ document.addEventListener('DOMContentLoaded', function() {
         const toggleButtons = document.querySelectorAll('.toggle-btn');
         
         toggleButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const parentSection = this.closest('.basic-control, .flavor-control');
-                parentSection.classList.toggle('collapsed');
-                this.innerHTML = parentSection.classList.contains('collapsed') ? '&#9660;' : '&#9650;';
-            });
+            // Remover eventos antigos para evitar duplicação
+            btn.removeEventListener('click', toggleSectionHandler);
+            // Adicionar o novo handler
+            btn.addEventListener('click', toggleSectionHandler);
         });
     }
 
     // Inicializar os botões de toggle para recolher/expandir
     initToggleButtons();
+    
+    // Easter Egg: Dark/Light Mode toggle na imagem do V60
+    initDarkModeEasterEgg();
 });
+
+// Função para inicializar o easter egg do dark mode
+
+// Função para inicializar o easter egg das tags
+function initVolumeCounterEasterEgg() {
+    let clickCount = 0;
+    let clickTimer = null;
+    
+    // Função para encontrar o volume counter (mesmo se ainda não existir)
+    function setupTagsClick() {
+        const tagsContainer = document.querySelector('.flavor-tags-column');
+        
+        if (tagsContainer && !tagsContainer.hasEasterEgg) {
+            tagsContainer.hasEasterEgg = true;
+            
+            // Por padrão: mostrar 4 tags de info, esconder contador
+            const infoTags = document.querySelectorAll('.info-tag');
+            const counterTags = document.querySelectorAll('.counter-tag');
+            
+            infoTags.forEach(tag => tag.classList.add('visible'));
+            counterTags.forEach(tag => tag.classList.remove('visible'));
+            
+            // Adicionar title hint
+            volumeCounter.setAttribute('title', 'Dic 3 vezes para modo minimalista �');
+            
+            volumeCounter.addEventListener('click', function(e) {
+                e.stopPropagation(); // Evitar conflitos com outros cliques
+                
+                clickCount++;
+                
+                // Se é o primeiro clique, começar o timer
+                if (clickCount === 1) {
+                    clickTimer = setTimeout(() => {
+                        clickCount = 0; // Reset após 500ms
+                    }, 500);
+                }
+                
+                // Se clicou 3 vezes rapidamente (dentro de 500ms)
+                if (clickCount === 3) {
+                    clearTimeout(clickTimer);
+                    clickCount = 0;
+                    
+                    // Alternar entre modo info e contador
+                    window.toggleTagsMode();
+                    
+                    // Feedback visual no contador
+                    this.style.transform = 'scale(1.2) rotate(10deg)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 300);
+                    
+                    // Mostrar notificação
+                    showTagsNotification(showingInfoTags);
+                }
+            });
+        }
+    }
+    
+    // Tentar configurar imediatamente
+    setupTagsClick();
+    
+    // Observer para quando o contador for criado dinamicamente
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+                setupTagsClick();
+            }
+        });
+    });
+    
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+}
+
+// Função para mostrar notificação das tags
+function showTagsNotification(showingInfo) {
+    const notification = document.createElement('div');
+    const message = showingInfo ? '🏷️ Modo informações ativo' : '📊 Modo contador ativo';
+    notification.innerHTML = message;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        z-index: 1000;
+        animation: slideInLeft 0.3s ease-out;
+        box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
+    `;
+    
+    // Adicionar animação CSS
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutLeft {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(-100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(notification);
+    
+    // Remover após 2 segundos
+    setTimeout(() => {
+        notification.style.animation = 'slideOutLeft 0.3s ease-out';
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+            if (document.head.contains(style)) {
+                document.head.removeChild(style);
+            }
+        }, 300);
+    }, 2000);
+}
+
+// Função para inicializar o easter egg do dark mode
+function initDarkModeEasterEgg() {
+    const coffeeImage = document.querySelector('.coffee-cup-illustration');
+    let clickCount = 0;
+    let clickTimer = null;
+    
+    if (coffeeImage) {
+        // Verificar se já tem preferência salva
+        const savedTheme = localStorage.getItem('v60-theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        coffeeImage.addEventListener('click', function() {
+            clickCount++;
+            
+            // Se é o primeiro clique, começar o timer
+            if (clickCount === 1) {
+                clickTimer = setTimeout(() => {
+                    clickCount = 0; // Reset após 500ms
+                }, 500);
+            }
+            
+            // Se clicou 3 vezes rapidamente (dentro de 500ms)
+            if (clickCount === 3) {
+                clearTimeout(clickTimer);
+                clickCount = 0;
+                
+                // Toggle do tema
+                const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('v60-theme', newTheme);
+                
+                // Efeito especial na imagem com rotações múltiplas PRIMEIRO
+                coffeeImage.style.transition = 'transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                coffeeImage.style.transform = 'rotate(720deg) scale(1.3)';
+                
+                // Reset mais lento para garantir que a animação seja vista
+                setTimeout(() => {
+                    coffeeImage.style.transition = 'transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), filter 0.2s ease';
+                    coffeeImage.style.transform = '';
+                }, 1000);
+                
+                // Feedback visual DEPOIS da animação começar
+                setTimeout(() => {
+                    showThemeChangeNotification(newTheme);
+                }, 200);
+            }
+        });
+        
+        // Adicionar title hint sutil
+        coffeeImage.setAttribute('title', '3x rapidamente = Dark Mode 😉');
+    }
+}
+
+// Função para mostrar notificação de mudança de tema
+function showThemeChangeNotification(theme) {
+    const notification = document.createElement('div');
+    const themeText = theme === 'dark' ? '🌙 Modo Escuro Ativado' : '☀️ Modo Claro Ativado';
+    
+    notification.innerHTML = themeText;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--primary);
+        color: var(--white);
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        z-index: 1000;
+        animation: slideInRight 0.3s ease-out;
+        box-shadow: var(--shadow);
+    `;
+    
+    // Adicionar animação CSS
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(notification);
+    
+    // Remover após 3 segundos
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease-out';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+            document.head.removeChild(style);
+        }, 300);
+    }, 3000);
+}
 
 console.log("Script de calculadora carregado");
