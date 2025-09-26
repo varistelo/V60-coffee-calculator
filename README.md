@@ -25,7 +25,7 @@ Este projeto é uma calculadora web simples desenvolvida especificamente para o 
 2. Insira a quantidade desejada de café em mililitros.
 3. Selecione o tipo de café (Arábica ou Conilon).
 4. Ajuste os controles de sabor e intensidade conforme preferência.
-5. Clique em "Calcular Receita".
+5. Clique em "Calcular".
 6. Siga as instruções de preparo e use o timer integrado para controlar os tempos de despejo.
 
 ## Instalação
