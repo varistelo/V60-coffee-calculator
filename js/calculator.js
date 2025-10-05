@@ -4,6 +4,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const aciditySlider = document.getElementById('acidity-slider');
     const strengthSlider = document.getElementById('strength-slider');
     
+    // Garantir que o SVG seja carregado corretamente sem flash
+    const v60Image = document.querySelector('.coffee-cup-illustration');
+    if (v60Image) {
+        v60Image.addEventListener('load', function() {
+            this.style.opacity = '1';
+        });
+        
+        // Fallback para caso a imagem já tenha carregado antes do listener
+        if (v60Image.complete) {
+            v60Image.style.opacity = '1';
+        }
+    }
+    
     // Função para atualizar as tags informativas no subtítulo
     function updateSubtitleTags() {
         const coffeeVolume = document.getElementById('coffee-quantity').value;
@@ -11,27 +24,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const acidityValue = parseInt(aciditySlider.value);
         const strengthValue = parseInt(strengthSlider.value);
         
-        // Atualizar volume
-        const volumeTag = document.getElementById('volume-display');
-        volumeTag.textContent = `${coffeeVolume}ml`;
-        volumeTag.classList.add('visible');
+        // Array das tags para animação escalonada
+        const tags = [
+            {element: document.getElementById('volume-display'), content: `${coffeeVolume}ml`},
+            {element: document.getElementById('type-display'), content: coffeeType === 'arabica' ? 'Arábica' : 'Conilon'},
+            {element: document.getElementById('taste-display'), content: ['Ácido', 'Equilibrado', 'Doce'][acidityValue]},
+            {element: document.getElementById('strength-display'), content: ['Leve', 'Médio', 'Forte'][strengthValue]}
+        ];
         
-        // Atualizar tipo de café
-        const typeTag = document.getElementById('type-display');
-        typeTag.textContent = coffeeType === 'arabica' ? 'Arábica' : 'Conilon';
-        typeTag.classList.add('visible');
+        // Primeiro remover a classe visible de todas as tags para garantir que iniciem ocultas
+        tags.forEach(tag => {
+            tag.element.classList.remove('visible');
+        });
         
-        // Atualizar sabor
-        const tasteLabels = ['Ácido', 'Equilibrado', 'Doce'];
-        const tasteTag = document.getElementById('taste-display');
-        tasteTag.textContent = tasteLabels[acidityValue];
-        tasteTag.classList.add('visible');
-        
-        // Atualizar intensidade
-        const strengthLabels = ['Leve', 'Médio', 'Forte'];
-        const strengthTag = document.getElementById('strength-display');
-        strengthTag.textContent = strengthLabels[strengthValue];
-        strengthTag.classList.add('visible');
+        // Animar tags com delay escalonado
+        tags.forEach((tag, index) => {
+            setTimeout(() => {
+                tag.element.textContent = tag.content;
+                tag.element.classList.add('visible');
+            }, index * 280); // Aumentei para 200ms para ficar mais visível
+        });
     }
     
     // Função para manipular o comportamento de expandir/recolher das seções
@@ -56,7 +68,11 @@ document.addEventListener('DOMContentLoaded', function() {
     updateSliderLabels(aciditySlider, ['Ácido', 'Equilibrado', 'Doce']);
     updateSliderLabels(strengthSlider, ['Leve', 'Médio', 'Forte']);
     
-    // NÃO inicializar as tags - elas só aparecem após calcular
+    // Garantir que as tags do subtítulo iniciem ocultas
+    const subtitleTags = document.querySelectorAll('.subtitle-tags .info-tag');
+    subtitleTags.forEach(tag => {
+        tag.classList.remove('visible');
+    });
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -225,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         resultDiv.innerHTML = `
             <div class="recipe-info">
-                <h3>Café necessário: ${coffeeGrams.toFixed(1)}g</h3>
+                <h3><svg id="coffee-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 256 256" style="margin-right: 8px; vertical-align: middle; color: var(--primary); transition: transform 0.3s ease;"><path fill="currentColor" d="M71.22 190.47a108.9 108.9 0 0 1-33.84 9.16a4 4 0 0 1-3.89-2c-8.67-15.28-11.52-34.29-8-55.15c4.49-26.92 19.09-53.87 41.12-75.9s49-36.63 75.9-41.12c22.79-3.79 43.37 0 59.29 10.6a4 4 0 0 1-1.25 7.23a121 121 0 0 0-21.82 7.46c-21.77 9.9-49.6 31.06-58.52 75.7c-6.11 30.28-22.58 51.82-48.99 64.02M222.51 58.38a4 4 0 0 0-3.88-2a108.5 108.5 0 0 0-33.85 9.16c-26.41 12.2-42.88 33.74-48.94 64c-8.93 44.64-36.75 65.8-58.52 75.7a121 121 0 0 1-21.82 7.46a4 4 0 0 0-1.23 7.3c11.87 7.92 26.32 12 42.35 12a103.7 103.7 0 0 0 16.92-1.44c26.91-4.49 53.87-19.09 75.9-41.12s36.63-49 41.12-75.9c3.44-20.86.62-39.88-8.05-55.16"/></svg>Café necessário: ${coffeeGrams.toFixed(1)}g</h3>
             </div>
             
             <div class="timer-container">
@@ -357,6 +373,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!isRunning) {
                 // Iniciar o timer
                 isRunning = true;
+                toggleCoffeeIconAnimation(true); // Iniciar animação do ícone
                 
                 // Se estamos retomando de uma pausa, não mostrar a contagem regressiva
                 if (pausedSeconds > 0) {
@@ -395,10 +412,13 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // Parar o timer e salvar o tempo atual
                 if (timerInstance) {
-                    clearInterval(timerInstance);
+                    timerInstance.stop();
                     pausedSeconds = currentSeconds;  // Guardar o tempo atual para continuar depois
                     pausedCurrentStep = getCurrentStep(pausedSeconds, timePointsCache);
                 }
+                
+                isRunning = false;
+                toggleCoffeeIconAnimation(false); // Parar animação do ícone
                 
                 // Mostrar opções
                 startButton.style.display = 'none';
@@ -412,6 +432,8 @@ document.addEventListener('DOMContentLoaded', function() {
             currentSeconds = 0;
             pausedSeconds = 0;
             pausedCurrentStep = -1;
+            
+            toggleCoffeeIconAnimation(false); // Parar animação do ícone
             
             // Resetar display do timer
             document.getElementById('timer-display').textContent = '00:00';
@@ -433,6 +455,7 @@ document.addEventListener('DOMContentLoaded', function() {
         continueButton.addEventListener('click', function() {
             // Continuar timer do tempo pausado
             isRunning = true;
+            toggleCoffeeIconAnimation(true); // Retomar animação do ícone
             
             console.log("Continuando de:", pausedSeconds, "segundos, etapa:", pausedCurrentStep);
             
@@ -450,6 +473,35 @@ document.addEventListener('DOMContentLoaded', function() {
     // Função para iniciar o timer de preparação - agora com callback para atualizar o tempo atual
     function startBrewingTimer(steps, removeFilterTime, startFromSeconds = 0, startFromStep = -1, updateTimeCallback = null) {
         let audioContext;
+        let wakeLock = null;
+        
+        // Função para manter a tela acordada durante o timer
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake Lock ativado - tela não vai dormir durante o timer');
+                    
+                    wakeLock.addEventListener('release', () => {
+                        console.log('Wake Lock liberado');
+                    });
+                }
+            } catch (err) {
+                console.log('Wake Lock não suportado ou falhou:', err);
+            }
+        }
+        
+        // Função para liberar o Wake Lock
+        function releaseWakeLock() {
+            if (wakeLock !== null) {
+                wakeLock.release();
+                wakeLock = null;
+                console.log('Wake Lock liberado manualmente');
+            }
+        }
+        
+        // Ativar Wake Lock no início do timer
+        requestWakeLock();
         
         // Função para vibrar o dispositivo (se suportado)
         function vibrate(pattern) {
@@ -853,6 +905,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (seconds === timeLimit) {
                     clearInterval(timer);
                     
+                    // Liberar Wake Lock quando o timer termina
+                    releaseWakeLock();
+                    
+                    // Parar animação do ícone
+                    toggleCoffeeIconAnimation(false);
+                    
                     // Tocar o som de finalização
                     playBeep(1, 'finish');
                     
@@ -896,7 +954,27 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         }
         
-        return timer; // Retorna a instância para permitir cancelamento
+        return {
+            stop: function() {
+                clearInterval(timer);
+                releaseWakeLock();
+            },
+            interval: timer
+        };
+    }
+
+    // Função para controlar a animação do ícone de café
+    function toggleCoffeeIconAnimation(isRunning) {
+        const coffeeIcon = document.getElementById('coffee-icon');
+        if (coffeeIcon) {
+            if (isRunning) {
+                // Adicionar animação de rotação
+                coffeeIcon.style.animation = 'coffee-rotate 2s linear infinite';
+            } else {
+                // Remover animação
+                coffeeIcon.style.animation = '';
+            }
+        }
     }
 
     // Função para destacar o rótulo correspondente ao valor do slider
@@ -1110,7 +1188,7 @@ function initDarkModeEasterEgg() {
         });
         
         // Adicionar title hint sutil
-        coffeeImage.setAttribute('title', '3x rapidamente = Dark Mode 😉');
+        coffeeImage.setAttribute('title', '3x = Dark Mode 😉');
     }
 }
 
@@ -1159,5 +1237,112 @@ function showThemeChangeNotification(theme) {
         }, 300);
     }, 3000);
 }
+
+// Easter egg do GitHub no título
+function initGitHubEasterEgg() {
+    const title = document.querySelector('h1');
+    
+    if (title) {
+        title.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Efeito visual no título
+            title.style.transform = 'scale(1.1)';
+            title.style.color = '#ff6b35';
+            setTimeout(() => {
+                title.style.transform = '';
+                title.style.color = '';
+            }, 300);
+            
+            // Abrir GitHub em nova aba
+            setTimeout(() => {
+                window.open('https://github.com/varistelo/V60-coffee-calculator', '_blank');
+            }, 200);
+            
+            // Mostrar notificação sutil
+            showGitHubNotification();
+        });
+        
+        // Adicionar title hint sutil
+        title.setAttribute('title', 'Código Fonte 💻');
+    }
+}
+
+// Função para mostrar notificação do GitHub
+function showGitHubNotification() {
+    const notification = document.createElement('div');
+    notification.innerHTML = '🚀 Abrindo repositório GitHub...';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #24292e, #444d56);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        z-index: 10000;
+        box-shadow: 0 8px 25px rgba(36, 41, 46, 0.3);
+        opacity: 0;
+        transform: translateX(100px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animar entrada
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateX(0)';
+    }, 10);
+    
+    // Remover após 2 segundos
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100px)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 2000);
+}
+
+// Função para animar o ícone V60 na inicialização
+function initV60ShakeAnimation() {
+    const coffeeIcon = document.querySelector('.coffee-cup-illustration');
+    
+    if (coffeeIcon) {
+        // Aguardar 3 segundos após carregar a página
+        setTimeout(() => {
+            // Adicionar uma classe especial para a animação de chacoalhada
+            coffeeIcon.classList.add('shake-hint');
+            
+            // Remover a classe após a animação terminar (2 segundos)
+            setTimeout(() => {
+                coffeeIcon.classList.remove('shake-hint');
+            }, 2000);
+        }, 3000); // 3 segundos de delay
+    }
+}
+
+// Função para tornar o volume counter clicável
+function initVolumeCounterClick() {
+    // Usar event delegation para capturar cliques no volume counter
+    document.addEventListener('click', function(event) {
+        if (event.target && event.target.id === 'volume-counter') {
+            // Abrir o site da Varistelo em nova aba
+            window.open('https://varistelo.com.br', '_blank', 'noopener,noreferrer');
+        }
+    });
+}
+
+// Inicializar easter egg do GitHub
+document.addEventListener('DOMContentLoaded', function() {
+    initGitHubEasterEgg();
+    initV60ShakeAnimation(); // Adicionar a animação inicial
+    initVolumeCounterClick(); // Adicionar funcionalidade de clique no volume counter
+});
 
 console.log("Script de calculadora carregado");
