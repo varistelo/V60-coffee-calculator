@@ -1,10 +1,12 @@
-const CACHE_NAME = 'v60-coffee-calculator-v1.0';
+const CACHE_NAME = 'v60-coffee-calculator-v1.2';
 const STATIC_ASSETS = [
   './',
   './index.html',
   './css/style.css',
   './js/calculator.js',
   './images/v60.svg',
+  './images/v60-192.png',
+  './images/v60-512.png',
   './images/pattern-bg.svg',
   './images/Coffee-beans.svg',
   './manifest.json'
@@ -12,7 +14,7 @@ const STATIC_ASSETS = [
 
 // Instalar Service Worker e fazer cache dos assets
 self.addEventListener('install', event => {
-  console.log('Service Worker: Instalando...');
+  console.log('Service Worker: Instalando v1.1...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -55,6 +57,9 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   // Apenas interceptar requisições GET
   if (event.request.method !== 'GET') return;
+  
+  // Ignorar requisições para outros domínios
+  if (!event.request.url.startsWith(self.location.origin)) return;
   
   event.respondWith(
     caches.match(event.request)
@@ -107,5 +112,26 @@ self.addEventListener('sync', event => {
     console.log('Service Worker: Sincronizando dados em background');
     // Aqui você pode implementar sincronização de dados
     // Por exemplo, enviar dados salvos localmente quando voltar online
+  }
+});
+
+// Push notifications (se necessário no futuro)
+self.addEventListener('push', event => {
+  if (event.data) {
+    const data = event.data.json();
+    const options = {
+      body: data.body,
+      icon: './images/v60.svg',
+      badge: './images/v60.svg',
+      vibrate: [100, 50, 100],
+      data: {
+        dateOfArrival: Date.now(),
+        primaryKey: 1
+      }
+    };
+    
+    event.waitUntil(
+      self.registration.showNotification(data.title, options)
+    );
   }
 });

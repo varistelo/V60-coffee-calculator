@@ -1330,7 +1330,7 @@ function initV60ShakeAnimation() {
     }
 }
 
-// Função para tornar o volume counter clicável para instalar PWA
+// Função para tornar o volume counter clicável - Sempre PWA
 function initVolumeCounterClick() {
     let deferredPrompt = null;
     
@@ -1339,22 +1339,47 @@ function initVolumeCounterClick() {
         e.preventDefault();
         deferredPrompt = e;
         console.log('💡 PWA disponível via volume counter!');
+        
+        // Adicionar dica visual sutil quando PWA disponível
+        const volumeCounter = document.getElementById('volume-counter');
+        if (volumeCounter) {
+            volumeCounter.style.cursor = 'pointer';
+            volumeCounter.title = '📱 Clique para instalar o app!';
+        }
+    });
+    
+    // Remover dica quando PWA já foi instalado
+    window.addEventListener('appinstalled', () => {
+        const volumeCounter = document.getElementById('volume-counter');
+        if (volumeCounter) {
+            volumeCounter.style.cursor = 'default';
+            volumeCounter.title = '';
+        }
+        console.log('🎉 PWA instalado com sucesso!');
     });
     
     // Usar event delegation para capturar cliques no volume counter
     document.addEventListener('click', async function(event) {
         if (event.target && event.target.id === 'volume-counter') {
-            // Se PWA está disponível, instalar
+            console.log(`🎯 Volume counter clicado! PWA: ${deferredPrompt ? 'DISPONÍVEL' : 'NÃO DISPONÍVEL'}`);
+            
             if (deferredPrompt) {
+                console.log('📱 Tentando instalar PWA...');
                 try {
-                    // Efeito visual no volume counter
-                    event.target.style.transform = 'scale(1.2)';
-                    event.target.style.background = 'rgba(46, 125, 46, 0.9)';
+                    // Efeito visual PWA (azul distintivo para não conflitar com o verde do timer)
+                    event.target.style.transform = 'scale(1.3)';
+                    event.target.style.background = 'rgba(66, 133, 244, 0.9)';
+                    event.target.style.color = '#ffffff';
+                    event.target.style.border = '2px solid #4285f4';
+                    event.target.style.boxShadow = '0 0 15px rgba(66, 133, 244, 0.5)';
                     
                     setTimeout(() => {
                         event.target.style.transform = '';
                         event.target.style.background = '';
-                    }, 300);
+                        event.target.style.color = '';
+                        event.target.style.border = '';
+                        event.target.style.boxShadow = '';
+                    }, 500);
                     
                     // Mostrar prompt de instalação
                     deferredPrompt.prompt();
@@ -1362,19 +1387,29 @@ function initVolumeCounterClick() {
                     
                     if (outcome === 'accepted') {
                         console.log('✅ PWA instalado via volume counter!');
+                        // Remover dica visual
+                        event.target.style.cursor = 'default';
+                        event.target.title = '';
                     } else {
                         console.log('❌ Usuário recusou instalar PWA');
                     }
                     
                     deferredPrompt = null;
                 } catch (error) {
-                    console.log('Erro ao instalar PWA:', error);
-                    // Fallback: abrir varistelo se PWA falhar
-                    window.open('https://varistelo.com.br', '_blank', 'noopener,noreferrer');
+                    console.log('❌ Erro ao instalar PWA:', error);
                 }
             } else {
-                // Se PWA não está disponível, abrir varistelo.com.br (fallback)
-                window.open('https://varistelo.com.br', '_blank', 'noopener,noreferrer');
+                // PWA não disponível - dar feedback visual sem ação
+                console.log('ℹ️ PWA não disponível ou já instalado');
+                
+                // Efeito visual mais sutil (indicando que não há ação)
+                event.target.style.transform = 'scale(1.1)';
+                event.target.style.filter = 'brightness(1.2)';
+                
+                setTimeout(() => {
+                    event.target.style.transform = '';
+                    event.target.style.filter = '';
+                }, 200);
             }
         }
     });
