@@ -1267,7 +1267,7 @@ function initGitHubEasterEgg() {
         });
         
         // Adicionar title hint sutil
-        title.setAttribute('title', 'GLP-3.0 💻');
+        title.setAttribute('title', 'GPL-3.0 💻');
     }
 }
 
