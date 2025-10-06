@@ -424,6 +424,29 @@ button[type="submit"].loading::after {
     to { transform: rotate(360deg); }
 }
 
+@keyframes coffee-rotate-pulse {
+    0% { 
+        transform: rotate(0deg) scale(1);
+        filter: brightness(1);
+       }
+    25% { 
+        transform: rotate(90deg) scale(1.2);
+        filter: brightness(1.2);
+    }
+    50% { 
+        transform: rotate(180deg) scale(1);
+        filter: brightness(1);
+    }
+    75% { 
+        transform: rotate(270deg) scale(1.2);
+        filter: brightness(1.2);
+    }
+    100% { 
+        transform: rotate(360deg) scale(1);
+        filter: brightness(1);
+    }
+}
+
 @keyframes coffee-spin {
     0% { 
         transform: translate(-50%, -50%) rotate(0deg);
@@ -1477,4 +1500,76 @@ button[type="submit"].loading::after {
     }
     
     /* ...existing code... */
+}
+
+/* PWA Styles */
+#install-button {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    background: var(--primary) !important;
+    color: white !important;
+    border: none !important;
+    padding: 12px 16px !important;
+    border-radius: 25px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 12px rgba(108, 52, 40, 0.3) !important;
+    z-index: 1000 !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+#install-button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(108, 52, 40, 0.4) !important;
+    background: var(--primary-light) !important;
+}
+
+#install-button:active {
+    transform: translateY(0) !important;
+}
+
+[data-theme="dark"] #install-button {
+    background: var(--primary) !important;
+    box-shadow: 0 4px 12px rgba(212, 165, 116, 0.3) !important;
+}
+
+[data-theme="dark"] #install-button:hover {
+    background: var(--primary-light) !important;
+    box-shadow: 0 6px 16px rgba(212, 165, 116, 0.4) !important;
+}
+
+/* PWA Fullscreen adjustments */
+@media (display-mode: standalone) {
+    body {
+        padding-top: 10px; /* Menos padding quando em modo app */
+    }
+    
+    .container {
+        margin-top: 0;
+    }
+    
+    /* Esconder botão de instalação quando já instalado */
+    #install-button {
+        display: none !important;
+    }
+}
+
+/* PWA Loading indicator */
+.pwa-loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    animation: pwa-loading 2s infinite;
+    z-index: 9999;
+}
+
+@keyframes pwa-loading {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
 }

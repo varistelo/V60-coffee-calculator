@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const coffeeGrams = coffeeVolume / ratios[coffeeType];
         const waterTotal = coffeeVolume;
         
-        // Divisão do método Kasuya 4:6
+        // Divisão do método 4:6
         const firstPhase = Math.floor(waterTotal * 0.4); // 40% para doçura/acidez
         const secondPhase = waterTotal - firstPhase; // 60% restantes para intensidade
         
@@ -373,10 +373,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!isRunning) {
                 // Iniciar o timer
                 isRunning = true;
-                toggleCoffeeIconAnimation(true); // Iniciar animação do ícone
                 
                 // Se estamos retomando de uma pausa, não mostrar a contagem regressiva
                 if (pausedSeconds > 0) {
+                    toggleCoffeeIconAnimation(true); // Iniciar animação do ícone
                     timerInstance = startBrewingTimer(pourSteps, removeFilterTime, pausedSeconds, pausedCurrentStep, function(seconds) {
                         currentSeconds = seconds;  // Atualizar o contador global
                     });
@@ -400,6 +400,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             clearInterval(countdownInterval);
                             countdownOverlay.style.display = 'none';
                             timerDisplay.style.opacity = '1'; // Mostrar o timer novamente
+                            
+                            // AGORA sim iniciar animação do ícone (após countdown)
+                            toggleCoffeeIconAnimation(true);
                             
                             // Iniciar o timer após contagem regressiva
                             timerInstance = startBrewingTimer(pourSteps, removeFilterTime, 0, -1, function(seconds) {
@@ -968,8 +971,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const coffeeIcon = document.getElementById('coffee-icon');
         if (coffeeIcon) {
             if (isRunning) {
-                // Adicionar animação de rotação
-                coffeeIcon.style.animation = 'coffee-rotate 2s linear infinite';
+                // Adicionar animação de rotação + pulsação
+                coffeeIcon.style.animation = 'coffee-rotate-pulse 2s linear infinite';
             } else {
                 // Remover animação
                 coffeeIcon.style.animation = '';
@@ -1264,7 +1267,7 @@ function initGitHubEasterEgg() {
         });
         
         // Adicionar title hint sutil
-        title.setAttribute('title', 'Código Fonte 💻');
+        title.setAttribute('title', 'GLP-3.0 💻');
     }
 }
 
@@ -1327,13 +1330,52 @@ function initV60ShakeAnimation() {
     }
 }
 
-// Função para tornar o volume counter clicável
+// Função para tornar o volume counter clicável para instalar PWA
 function initVolumeCounterClick() {
+    let deferredPrompt = null;
+    
+    // Aguardar evento de PWA disponível
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        console.log('💡 PWA disponível via volume counter!');
+    });
+    
     // Usar event delegation para capturar cliques no volume counter
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', async function(event) {
         if (event.target && event.target.id === 'volume-counter') {
-            // Abrir o site da Varistelo em nova aba
-            window.open('https://varistelo.com.br', '_blank', 'noopener,noreferrer');
+            // Se PWA está disponível, instalar
+            if (deferredPrompt) {
+                try {
+                    // Efeito visual no volume counter
+                    event.target.style.transform = 'scale(1.2)';
+                    event.target.style.background = 'rgba(46, 125, 46, 0.9)';
+                    
+                    setTimeout(() => {
+                        event.target.style.transform = '';
+                        event.target.style.background = '';
+                    }, 300);
+                    
+                    // Mostrar prompt de instalação
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        console.log('✅ PWA instalado via volume counter!');
+                    } else {
+                        console.log('❌ Usuário recusou instalar PWA');
+                    }
+                    
+                    deferredPrompt = null;
+                } catch (error) {
+                    console.log('Erro ao instalar PWA:', error);
+                    // Fallback: abrir varistelo se PWA falhar
+                    window.open('https://varistelo.com.br', '_blank', 'noopener,noreferrer');
+                }
+            } else {
+                // Se PWA não está disponível, abrir varistelo.com.br (fallback)
+                window.open('https://varistelo.com.br', '_blank', 'noopener,noreferrer');
+            }
         }
     });
 }
@@ -1342,7 +1384,7 @@ function initVolumeCounterClick() {
 document.addEventListener('DOMContentLoaded', function() {
     initGitHubEasterEgg();
     initV60ShakeAnimation(); // Adicionar a animação inicial
-    initVolumeCounterClick(); // Adicionar funcionalidade de clique no volume counter
+    initVolumeCounterClick(); // Adicionar funcionalidade de clique no volume counter (agora PWA)
 });
 
 console.log("Script de calculadora carregado");

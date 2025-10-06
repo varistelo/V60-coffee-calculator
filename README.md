@@ -1,6 +1,6 @@
 # Calculadora de Café V60
 
-Este projeto é uma calculadora web simples desenvolvida especificamente para o método de preparo V60, utilizando o método Kasuya 4:6. A calculadora permite que os usuários insiram a quantidade desejada de café em mililitros e selecionem o tipo de café (Arábica ou Conilon) para determinar a quantidade apropriada de água necessária para o preparo.
+Este projeto é uma calculadora web simples desenvolvida especificamente para o método de preparo V60, utilizando o método 4:6. A calculadora permite que os usuários insiram a quantidade desejada de café em mililitros e selecionem o tipo de café (Arábica ou Conilon) para determinar a quantidade apropriada de água necessária para o preparo.
 
 ## Funcionalidades
 

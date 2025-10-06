@@ -6,7 +6,15 @@
         <title>Calculadora de Café V60 - Método 4:6</title>
     <link rel="stylesheet" href="css/style.css?v=1.0">
     <link rel="icon" href="images/v60.svg" type="image/svg+xml">
-    <meta name="description" content="Calculadora para preparo de café utilizando o método V60 4:6 de Tetsu Kasuya.">
+    <link rel="manifest" href="manifest.json">
+    <meta name="description" content="Calculadora para preparo de café utilizando o método V60 4:6.">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="V60 Café">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#6c3428">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -93,5 +101,111 @@
     </div>
 
     <script src="js/calculator.js?v=1.0"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado com sucesso!', registration.scope);
+                        
+                        // Verificar se há uma nova versão disponível
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // Nova versão disponível
+                                    if (confirm('Nova versão da Calculadora V60 disponível! Deseja atualizar?')) {
+                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.log('❌ Erro ao registrar Service Worker:', error);
+                    });
+            });
+
+            // Mostrar prompt de instalação do PWA
+            let deferredPrompt;
+            
+            window.addEventListener('beforeinstallprompt', (e) => {
+                console.log('💡 PWA pode ser instalado!');
+                
+                // Prevenir o prompt automático
+                e.preventDefault();
+                
+                // NÃO mostrar botão - easter egg será ativado via JavaScript
+                // showInstallButton();
+            });
+
+            // Função para mostrar botão de instalação
+            function showInstallButton() {
+                // Criar botão de instalação se não existir
+                if (!document.getElementById('install-button')) {
+                    const installButton = document.createElement('button');
+                    installButton.id = 'install-button';
+                    installButton.innerHTML = '📱 Instalar App';
+                    installButton.style.cssText = `
+                        position: fixed;
+                        bottom: 20px;
+                        right: 20px;
+                        background: var(--primary);
+                        color: white;
+                        border: none;
+                        padding: 12px 16px;
+                        border-radius: 25px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        box-shadow: 0 4px 12px rgba(108, 52, 40, 0.3);
+                        z-index: 1000;
+                        font-size: 14px;
+                        transition: all 0.3s ease;
+                    `;
+                    
+                    installButton.addEventListener('click', async () => {
+                        if (deferredPrompt) {
+                            deferredPrompt.prompt();
+                            const { outcome } = await deferredPrompt.userChoice;
+                            
+                            if (outcome === 'accepted') {
+                                console.log('✅ Usuário instalou o PWA');
+                            } else {
+                                console.log('❌ Usuário recusou instalar o PWA');
+                            }
+                            
+                            deferredPrompt = null;
+                            installButton.remove();
+                        }
+                    });
+                    
+                    document.body.appendChild(installButton);
+                    
+                    // Remover botão após 10 segundos se não usar
+                    setTimeout(() => {
+                        if (installButton.parentNode) {
+                            installButton.style.opacity = '0.7';
+                            setTimeout(() => installButton.remove(), 5000);
+                        }
+                    }, 10000);
+                }
+            }
+
+            // Detectar quando o PWA foi instalado
+            window.addEventListener('appinstalled', (evt) => {
+                console.log('🎉 PWA foi instalado com sucesso!');
+                
+                // Remover botão de instalação se existir
+                const installButton = document.getElementById('install-button');
+                if (installButton) {
+                    installButton.remove();
+                }
+            });
+        }
+    </script>
 </body>
 </html>
