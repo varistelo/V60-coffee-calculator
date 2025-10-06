@@ -1,7 +1,7 @@
 {
   "name": "Calculadora de Café V60 - Método 4:6",
   "short_name": "V60 Café",
-  "description": "V60 - método 4:6",
+  "description": "Calculadora para preparo de café utilizando o método V60 4:6, com timer integrado, cálculos precisos e funcionamento offline.",
   "start_url": "./",
   "id": "./",
   "display": "standalone",
@@ -13,22 +13,64 @@
   "lang": "pt-BR",
   "categories": ["food", "lifestyle", "utilities"],
   "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Nova Receita",
+      "short_name": "Receita",
+      "description": "Calcular nova receita V60",
+      "url": "./",
+      "icons": [
+        {
+          "src": "images/v60-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Timer",
+      "short_name": "Timer", 
+      "description": "Iniciar timer de preparo",
+      "url": "./#timer",
+      "icons": [
+        {
+          "src": "images/v60-192.png", 
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
   "icons": [
     {
       "src": "images/v60-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/v60-192.png",
+      "sizes": "192x192", 
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "images/v60-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/v60-512.png",
+      "sizes": "512x512",
+      "type": "image/png", 
+      "purpose": "maskable"
     },
     {
       "src": "images/v60.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
   "screenshots": [

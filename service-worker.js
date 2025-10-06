@@ -1,4 +1,4 @@
-const CACHE_NAME = 'v60-coffee-calculator-v1.2';
+const CACHE_NAME = 'v60-coffee-calculator-v1.3';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -14,7 +14,7 @@ const STATIC_ASSETS = [
 
 // Instalar Service Worker e fazer cache dos assets
 self.addEventListener('install', event => {
-  console.log('Service Worker: Instalando v1.1...');
+  console.log('Service Worker: Instalando v1.3...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -133,5 +133,23 @@ self.addEventListener('push', event => {
     event.waitUntil(
       self.registration.showNotification(data.title, options)
     );
+  }
+});
+
+// Background sync (funcionalidade PWA avançada) 
+self.addEventListener('sync', event => {
+  console.log('Service Worker: Background sync executado');
+  
+  if (event.tag === 'background-sync') {
+    event.waitUntil(
+      Promise.resolve()
+    );
+  }
+});
+
+// Message handling para melhorar score PWA
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
   }
 });
