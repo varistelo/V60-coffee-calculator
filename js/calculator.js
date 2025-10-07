@@ -1147,9 +1147,38 @@ function initDarkModeEasterEgg() {
     let clickTimer = null;
     
     if (coffeeImage) {
-        // Verificar se já tem preferência salva
-        const savedTheme = localStorage.getItem('v60-theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
+        // Detecta a preferência do sistema como padrão
+        function getSystemTheme() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                return 'dark';
+            }
+            return 'light';
+        }
+        
+        // Aplica tema inicial: salvo no localStorage ou preferência do sistema
+        const savedTheme = localStorage.getItem('v60-theme');
+        const systemTheme = getSystemTheme();
+        const initialTheme = savedTheme || systemTheme;
+        
+        document.documentElement.setAttribute('data-theme', initialTheme);
+        
+        // Se não há tema salvo, não salva o tema do sistema (permite mudança automática)
+        if (!savedTheme) {
+            console.log(`🌓 Tema detectado do sistema: ${systemTheme}`);
+        }
+        
+        // Escuta mudanças na preferência do sistema (apenas se não há tema manual salvo)
+        if (window.matchMedia) {
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            mediaQuery.addListener(function(e) {
+                // Só aplica mudança automática se não há preferência manual salva
+                if (!localStorage.getItem('v60-theme')) {
+                    const newSystemTheme = e.matches ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newSystemTheme);
+                    console.log(`🌓 Tema do sistema alterado para: ${newSystemTheme}`);
+                }
+            });
+        }
         
         coffeeImage.addEventListener('click', function() {
             clickCount++;
@@ -1312,21 +1341,72 @@ function showGitHubNotification() {
     }, 2000);
 }
 
-// Função para animar o ícone V60 na inicialização
-function initV60ShakeAnimation() {
+// Função para animar o ícone V60 com efeitos aleatórios elegantes
+function initV60RandomAnimations() {
     const coffeeIcon = document.querySelector('.coffee-cup-illustration');
     
     if (coffeeIcon) {
-        // Aguardar 3 segundos após carregar a página
-        setTimeout(() => {
-            // Adicionar uma classe especial para a animação de chacoalhada
-            coffeeIcon.classList.add('shake-hint');
+        // Array de animações elegantes (com maior peso para subtle-rotate)
+        const animations = [
+            'gentle-bounce',
+            'elegant-glow', 
+            'subtle-rotate',
+            'subtle-rotate', // Duplicado para aumentar a chance
+            'coffee-steam',
+            'gentle-pulse',
+            'elegant-swing',
+            'subtle-rotate', // Triplicado para ainda mais chance
+            'shake-hint' // Mantém a original também
+        ];
+        
+        // Função para executar uma animação aleatória
+        function playRandomAnimation() {
+            // Remove qualquer animação anterior
+            animations.forEach(anim => coffeeIcon.classList.remove(anim));
             
-            // Remover a classe após a animação terminar (2 segundos)
+            // Seleciona uma animação aleatória
+            const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+            
+            // Aplica a animação
+            coffeeIcon.classList.add(randomAnimation);
+            
+            // Remove a classe após a animação terminar
             setTimeout(() => {
-                coffeeIcon.classList.remove('shake-hint');
-            }, 2000);
-        }, 3000); // 3 segundos de delay
+                coffeeIcon.classList.remove(randomAnimation);
+            }, 3000); // 3 segundos para dar tempo para todas as animações
+        }
+        
+        // Primeira animação após 3-5 segundos (aleatório)
+        const firstDelay = 3000 + Math.random() * 2000; // Entre 3-5 segundos
+        setTimeout(playRandomAnimation, firstDelay);
+        
+        // Configura animações aleatórias contínuas
+        function scheduleNextAnimation() {
+            // Próxima animação entre 6-18 segundos (mais frequente para ver mais o balanço)
+            const nextDelay = 6000 + Math.random() * 12000;
+            
+            setTimeout(() => {
+                playRandomAnimation();
+                scheduleNextAnimation(); // Agenda a próxima
+            }, nextDelay);
+        }
+        
+        // Inicia o ciclo de animações após a primeira
+        setTimeout(scheduleNextAnimation, firstDelay + 3000);
+        
+        // Bonus: animação também pode ser ativada em interações especiais
+        let lastInteractionTime = 0;
+        document.addEventListener('click', () => {
+            const now = Date.now();
+            // Se passaram mais de 10 segundos desde a última interação
+            if (now - lastInteractionTime > 10000) {
+                // 15% de chance de ativar uma animação em cliques
+                if (Math.random() < 0.15) {
+                    setTimeout(playRandomAnimation, 500 + Math.random() * 1500);
+                }
+            }
+            lastInteractionTime = now;
+        });
     }
 }
 
@@ -1418,8 +1498,103 @@ function initVolumeCounterClick() {
 // Inicializar easter egg do GitHub
 document.addEventListener('DOMContentLoaded', function() {
     initGitHubEasterEgg();
-    initV60ShakeAnimation(); // Adicionar a animação inicial
+    initV60RandomAnimations(); // Iniciar animações aleatórias do V60
     initVolumeCounterClick(); // Adicionar funcionalidade de clique no volume counter (agora PWA)
+    initTagSuspensionEffect(); // Iniciar efeito de suspensão das tags
 });
+
+// Função para criar efeito de "suspensão" nas tags baseado no scroll e zoom
+function initTagSuspensionEffect() {
+    const tagsContainer = document.querySelector('.subtitle-tags');
+    if (!tagsContainer) return;
+    
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+    
+    function updateTagMovement() {
+        const currentScrollY = window.scrollY;
+        const scrollDelta = currentScrollY - lastScrollY;
+        
+        // Só aplica movimento se o scroll for significativo
+        if (Math.abs(scrollDelta) > 2) {
+            const scrollMovement = Math.min(Math.max(scrollDelta * 0.8, -8), 8); // Efeito maior: de 0.4 para 0.8, de 4px para 8px
+            
+            // Aplica apenas movimento vertical, sem rotação
+            tagsContainer.style.transform = `translateY(${scrollMovement}px)`;
+            tagsContainer.style.transition = 'transform 0.15s ease-out'; // Resposta mais rápida
+            
+            // Reset gradual após o movimento
+            setTimeout(() => {
+                tagsContainer.style.transform = 'translateY(0px)';
+                tagsContainer.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)'; // Reset um pouco mais rápido
+            }, 120);
+        }
+        
+        lastScrollY = currentScrollY;
+        ticking = false;
+    }
+    
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(updateTagMovement);
+            ticking = true;
+        }
+    }
+    
+    // Event listeners apenas para scroll
+    window.addEventListener('scroll', requestTick, { passive: true });
+    window.addEventListener('touchmove', requestTick, { passive: true });
+    
+    // Movimento ocasional (raramente) - apenas se a página estiver parada
+    let idleTimer;
+    function scheduleOccasionalMovement() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+            // Só move se não houve scroll recente
+            if (Math.abs(window.scrollY - lastScrollY) < 1) {
+                const randomMovement = (Math.random() - 0.5) * 1; // Movimento ainda mais sutil: -0.5 a 0.5px
+                
+                // Apenas movimento vertical, sem rotação
+                tagsContainer.style.transform = `translateY(${randomMovement}px)`;
+                tagsContainer.style.transition = 'transform 2s ease-in-out'; // Transição ainda mais lenta
+                
+                setTimeout(() => {
+                    tagsContainer.style.transform = 'translateY(0px)';
+                }, 1000); // Duração maior
+            }
+            
+            // Reagenda para 30-90 segundos (ainda menos frequente)
+            scheduleOccasionalMovement();
+        }, 30000 + Math.random() * 60000); // Entre 30-90 segundos
+    }
+    
+    // Inicia movimento ocasional
+    scheduleOccasionalMovement();
+    
+    // Efeito especial para toque nas tags no PWA
+    const tags = tagsContainer.querySelectorAll('.info-tag');
+    tags.forEach((tag, index) => {
+        // Adiciona vibração para feedback tátil no PWA
+        tag.addEventListener('touchstart', function(e) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(10); // Vibração sutil
+            }
+            
+            // Efeito visual imediato
+            this.style.transform = 'scale(1.15) translateY(-3px)';
+            this.style.transition = 'all 0.1s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+            
+            // Adiciona classe para garantir estilo
+            this.classList.add('tag-pressed');
+        }, { passive: true });
+        
+        tag.addEventListener('touchend', function(e) {
+            // Remove efeito
+            this.style.transform = '';
+            this.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+            this.classList.remove('tag-pressed');
+        }, { passive: true });
+    });
+}
 
 console.log("Script de calculadora carregado");

@@ -40,13 +40,18 @@ body {
     background-image: url('../images/pattern-bg.svg');
     min-height: 100vh;
     padding: 20px;
+    padding-top: 20px; /* Sempre inicia próximo ao topo */
     color: var(--text);
     line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Alinha ao topo */
+    align-items: center; /* Centraliza horizontalmente */
 }
 
 .container {
     max-width: 560px;
-    margin: 0 auto;
+    width: 100%;
     background: rgba(255, 255, 255, 0.4);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
@@ -56,6 +61,7 @@ body {
     box-shadow: 0 15px 50px rgba(108, 52, 40, 0.15);
     position: relative;
     overflow: hidden;
+    margin-top: 0; /* Sempre inicia no topo */
 }
 
 [data-theme="dark"] .container {
@@ -70,6 +76,13 @@ body {
     justify-content: center;
     margin-bottom: 30px;
     flex-wrap: wrap;
+}
+
+/* Mobile optimization for header spacing */
+@media (max-width: 600px) {
+    .header-container {
+        margin-bottom: 20px; /* Reduzido de 30px para 20px */
+    }
 }
 
 /* Força o tamanho do SVG desde o primeiro frame de carregamento */
@@ -132,13 +145,15 @@ img[alt*="V60"],
 h1 {
     color: var(--primary);
     margin-bottom: 4px;
-    font-size: 2.0rem;
+    font-size: 2.2rem;
     font-weight: 700;
+    font-family: 'Fira Code', 'JetBrains Mono', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', 'Ubuntu Mono', 'Droid Sans Mono', 'Courier New', monospace;
     text-align: left;
     line-height: 1.1;
     cursor: pointer;
     user-select: none;
     transition: all 0.3s ease;
+    letter-spacing: -0.05em; /* Espaçamento mais compacto para fontes monospace */
 }
 
 h1:hover {
@@ -155,16 +170,19 @@ h1:hover {
 
 .subtitle-tags {
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 6px; /* Reduzido de 8px para 6px */
+    flex-wrap: nowrap; /* Não permite quebra de linha */
     justify-content: flex-start;
     align-items: center;
     margin-top: 8px;
+    margin-bottom: 18px; /* Adiciona espaço para o próximo elemento */
+    overflow-x: auto; /* Permite scroll horizontal se necessário */
+    overflow-y: hidden; /* Evita scroll vertical */
 }
 
 .subtitle-tags .info-tag {
-    font-size: 0.75rem;
-    padding: 3px 8px;
+    font-size: 0.7rem; /* Reduzido de 0.75rem */
+    padding: 3px 6px; /* Reduzido de 3px 8px */
     border-radius: 10px;
     font-weight: 600;
     background: rgba(255, 255, 255, 0.3);
@@ -173,13 +191,220 @@ h1:hover {
     border: 1px solid rgba(108, 52, 40, 0.15);
     color: var(--text);
     white-space: nowrap;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    flex-shrink: 0; /* Evita que as tags encolham */
+    cursor: pointer;
+    transform-origin: center;
+    position: relative;
+    will-change: transform; /* Otimização para animações */
 }
 
 [data-theme="dark"] .subtitle-tags .info-tag {
     background: rgba(45, 45, 45, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-light);
+}
+
+/* Efeitos interativos para as tags */
+.subtitle-tags .info-tag:hover,
+.subtitle-tags .info-tag:active {
+    transform: scale(1.15) translateY(-2px);
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(108, 52, 40, 0.3);
+    z-index: 10;
+}
+
+[data-theme="dark"] .subtitle-tags .info-tag:hover,
+[data-theme="dark"] .subtitle-tags .info-tag:active {
+    background: rgba(60, 60, 60, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Efeito de "suspensão" - reage ao scroll e zoom */
+.subtitle-tags {
+    display: flex;
+    gap: 6px; /* Reduzido de 8px para 6px */
+    flex-wrap: nowrap; /* Não permite quebra de linha */
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 8px;
+    margin-bottom: 18px; /* Adiciona espaço para o próximo elemento */
+    overflow-x: auto; /* Permite scroll horizontal se necessário */
+    overflow-y: hidden; /* Evita scroll vertical */
+    transform-origin: center center; /* Garante que transformações sejam centradas */
+}
+
+/* PWA e mobile: melhor responsividade ao toque */
+@media (hover: none) and (pointer: coarse) {
+    .subtitle-tags .info-tag {
+        padding: 4px 8px; /* Área de toque maior */
+        font-size: 0.75rem; /* Texto ligeiramente maior para mobile */
+    }
+    
+    .subtitle-tags .info-tag:active {
+        transform: scale(1.1) translateY(-2px) !important;
+        transition: all 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+        background: rgba(255, 255, 255, 0.7) !important;
+        z-index: 100;
+    }
+    
+    [data-theme="dark"] .subtitle-tags .info-tag:active {
+        background: rgba(80, 80, 80, 0.9) !important;
+        border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    }
+}
+
+/* Específico para PWA standalone - efeitos mais pronunciados */
+@media (display-mode: standalone) {
+    .subtitle-tags .info-tag:active {
+        transform: scale(1.15) translateY(-3px) !important;
+        transition: all 0.1s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+    }
+    
+    .subtitle-tags .info-tag {
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* Classe para efeito de toque ativo */
+.subtitle-tags .info-tag.tag-pressed {
+    transform: scale(1.15) translateY(-3px) !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    z-index: 100 !important;
+}
+
+[data-theme="dark"] .subtitle-tags .info-tag.tag-pressed {
+    background: rgba(90, 90, 90, 0.95) !important;
+}
+
+/* Keyframes para efeito de suspensão */
+@keyframes tag-suspension {
+    0%, 100% { 
+        transform: translateY(0px) rotate(0deg);
+    }
+    16% { 
+        transform: translateY(-1px) rotate(0.3deg);
+    }
+    33% { 
+        transform: translateY(1px) rotate(-0.2deg);
+    }
+    50% { 
+        transform: translateY(-0.5px) rotate(0.1deg);
+    }
+    66% { 
+        transform: translateY(0.8px) rotate(-0.1deg);
+    }
+    83% { 
+        transform: translateY(-0.3px) rotate(0.2deg);
+    }
+}
+
+/* Efeito dinâmico de movimento baseado em scroll/zoom */
+.subtitle-tags.dynamic-movement {
+    transform-origin: center;
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.subtitle-tags.dynamic-movement .info-tag {
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Efeitos individuais para cada tag durante movimento */
+.subtitle-tags.dynamic-movement .info-tag:nth-child(1) {
+    transition-delay: 0ms;
+}
+
+.subtitle-tags.dynamic-movement .info-tag:nth-child(2) {
+    transition-delay: 50ms;
+}
+
+.subtitle-tags.dynamic-movement .info-tag:nth-child(3) {
+    transition-delay: 100ms;
+}
+
+.subtitle-tags.dynamic-movement .info-tag:nth-child(4) {
+    transition-delay: 150ms;
+}
+
+/* Melhora dark mode para inputs e labels */
+[data-theme="dark"] input,
+[data-theme="dark"] select {
+    background-color: rgba(60, 60, 60, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus {
+    border-color: var(--accent);
+    background-color: rgba(70, 70, 70, 0.95);
+}
+
+[data-theme="dark"] label,
+[data-theme="dark"] .form-label {
+    color: #f0f0f0;
+    font-weight: 600;
+}
+
+/* Melhora dark mode para sliders */
+[data-theme="dark"] .tristate-slider {
+    background: rgba(80, 80, 80, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .tristate-slider::-webkit-slider-thumb {
+    background: #d4a574;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .tristate-slider::-moz-range-thumb {
+    background: #d4a574;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .slider-values {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .slider-values span {
+    color: #c0c0c0;
+}
+
+[data-theme="dark"] .slider-values span.active {
+    background-color: #d4a574;
+    color: #000000;
+    font-weight: bold;
+    border: 1px solid #ffffff;
+}
+
+/* Melhora dark mode para radio buttons */
+[data-theme="dark"] .radio-option {
+    background-color: rgba(60, 60, 60, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .radio-option:hover {
+    background-color: rgba(80, 80, 80, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .radio-option input[type="radio"] {
+    border: 2px solid #d4a574;
+    background-color: rgba(40, 40, 40, 0.8);
+}
+
+[data-theme="dark"] .radio-option input[type="radio"]:checked::before {
+    background-color: #d4a574;
+}
+
+[data-theme="dark"] .radio-option label {
+    color: #f0f0f0;
 }
 
 /* Cores específicas para cada tipo de tag */
@@ -229,21 +454,70 @@ h1:hover {
 
 @media (max-width: 500px) {
     .header-container {
-        flex-direction: column;
-        text-align: center;
+        flex-direction: row; /* Mudado de column para row para manter lado a lado */
+        text-align: left; /* Mudado de center para left */
+        margin-bottom: 15px; /* Ainda mais compacto */
+        align-items: flex-start; /* Alinha ao topo */
+        gap: 12px; /* Adiciona espaço entre imagem e texto */
     }
     
     .coffee-cup-illustration {
-        margin-right: 0;
-        margin-bottom: 15px;
+        margin-right: 0; /* Remove margin-right já que usamos gap */
+        margin-bottom: 0; /* Remove margin-bottom */
+        flex-shrink: 0; /* Evita que a imagem encolha */
     }
     
     .method-label, h1 {
-        text-align: center;
+        text-align: left; /* Mudado de center para left */
     }
     
     .subtitle-tags {
-        justify-content: center;
+        justify-content: flex-start; /* Mudado de center para flex-start */
+        flex-wrap: nowrap; /* Não permite quebra de linha no mobile */
+        margin-bottom: 15px; /* Espaçamento ajustado para mobile */
+        gap: 4px; /* Gap menor no mobile */
+        overflow-x: auto; /* Permite scroll se necessário */
+        padding-bottom: 2px; /* Espaço para possível scroll */
+    }
+    
+    .header-text {
+        flex: 1; /* Ocupa o espaço restante */
+        min-width: 0; /* Permite que o texto quebre */
+    }
+    
+    /* Otimizações específicas para telas muito pequenas */
+    .radio-options {
+        gap: 4px; /* Extremamente compacto */
+    }
+    
+    .radio-option {
+        padding: 6px 6px; /* Ainda menor */
+        font-size: 0.8rem;
+        border-radius: 6px; /* Bordas menores */
+        margin: 0; /* Remove margens */
+    }
+    
+    .radio-option label {
+        font-size: 0.8rem; /* Ainda menor */
+        font-weight: 500;
+    }
+    
+    .radio-option input[type="radio"] {
+        width: 16px; /* Menor */
+        height: 16px; /* Menor */
+        margin-right: 6px; /* Reduzido */
+    }
+    
+    .radio-option input[type="radio"]:checked::before {
+        width: 8px; /* Proporcionalmente menor */
+        height: 8px; /* Proporcionalmente menor */
+    }
+    
+    /* Garante que os tipos caibam lado a lado sem espaços em branco */
+    .radio-option {
+        flex: 1 1 48%; /* Força cada item a ocupar cerca de 48% para duas opções */
+        max-width: 48%; /* Limite máximo para duas opções */
+        min-width: 45%; /* Limite mínimo para duas opções */
     }
 }
 
@@ -251,6 +525,13 @@ form {
     display: flex;
     flex-direction: column;
     gap: 5px;
+}
+
+/* Mobile optimization for form spacing */
+@media (max-width: 600px) {
+    form {
+        gap: 4px; /* Ainda mais compacto no mobile */
+    }
 }
 
 label, .form-label {
@@ -347,6 +628,27 @@ button[type="submit"] {
     position: relative;
 }
 
+/* Mobile optimization for submit button */
+@media (max-width: 600px) {
+    button[type="submit"] {
+        margin: 8px auto; /* Reduzido de 10px para 8px */
+        padding: 10px 16px; /* Reduzido de 12px 20px para 10px 16px */
+    }
+    
+    .timer-button {
+        margin: 8px auto; /* Consistente com submit button */
+        padding: 10px 16px; /* Consistente com submit button */
+        width: 80%; /* Mesmo width */
+        max-width: 300px; /* Mesmo max-width */
+    }
+    
+    /* Sobrescreve o max-width dos botões específicos no mobile */
+    .reset-button,
+    .continue-button {
+        max-width: 300px; /* Consistente com outros botões */
+    }
+}
+
 button[type="submit"].loading {
     pointer-events: none;
     opacity: 0.8;
@@ -419,6 +721,133 @@ button[type="submit"].loading::after {
     animation-iteration-count: 1;
 }
 
+/* Novas animações aleatórias elegantes para o V60 */
+.coffee-cup-illustration.gentle-bounce {
+    animation: gentle-bounce 1.5s ease-in-out;
+}
+
+.coffee-cup-illustration.elegant-glow {
+    animation: elegant-glow 2s ease-in-out;
+}
+
+.coffee-cup-illustration.subtle-rotate {
+    animation: subtle-rotate 2.5s ease-in-out;
+}
+
+.coffee-cup-illustration.coffee-steam {
+    animation: coffee-steam 3s ease-in-out;
+}
+
+.coffee-cup-illustration.gentle-pulse {
+    animation: gentle-pulse 2s ease-in-out;
+}
+
+.coffee-cup-illustration.elegant-swing {
+    animation: elegant-swing 2.5s cubic-bezier(0.68, -0.35, 0.265, 1.35);
+}
+
+/* Keyframes para as novas animações */
+@keyframes gentle-bounce {
+    0%, 100% { 
+        transform: translateY(0) scale(1);
+    }
+    25% { 
+        transform: translateY(-8px) scale(1.05);
+        filter: brightness(1.1);
+    }
+    50% { 
+        transform: translateY(-12px) scale(1.08);
+        filter: brightness(1.15) drop-shadow(0 4px 8px rgba(108, 52, 40, 0.3));
+    }
+    75% { 
+        transform: translateY(-6px) scale(1.03);
+        filter: brightness(1.05);
+    }
+}
+
+@keyframes elegant-glow {
+    0%, 100% { 
+        filter: brightness(1) drop-shadow(0 0 0 rgba(108, 52, 40, 0));
+        transform: scale(1);
+    }
+    50% { 
+        filter: brightness(1.25) drop-shadow(0 0 15px rgba(108, 52, 40, 0.6));
+        transform: scale(1.05);
+    }
+}
+
+@keyframes subtle-rotate {
+    0%, 100% { 
+        transform: rotate(0deg) scale(1);
+        filter: brightness(1);
+    }
+    25% { 
+        transform: rotate(5deg) scale(1.02);
+        filter: brightness(1.08);
+    }
+    50% { 
+        transform: rotate(0deg) scale(1.06);
+        filter: brightness(1.12);
+    }
+    75% { 
+        transform: rotate(-3deg) scale(1.03);
+        filter: brightness(1.06);
+    }
+}
+
+@keyframes coffee-steam {
+    0%, 100% { 
+        transform: translateY(0) scale(1);
+        filter: brightness(1);
+    }
+    20% { 
+        transform: translateY(-3px) scale(1.02);
+        filter: brightness(1.05);
+    }
+    40% { 
+        transform: translateY(-6px) scale(1.04);
+        filter: brightness(1.1);
+    }
+    60% { 
+        transform: translateY(-4px) scale(1.06);
+        filter: brightness(1.15) hue-rotate(10deg);
+    }
+    80% { 
+        transform: translateY(-2px) scale(1.03);
+        filter: brightness(1.08);
+    }
+}
+
+@keyframes gentle-pulse {
+    0%, 100% { 
+        transform: scale(1);
+        filter: brightness(1) saturate(1);
+    }
+    50% { 
+        transform: scale(1.08);
+        filter: brightness(1.15) saturate(1.2) contrast(1.1);
+    }
+}
+
+@keyframes elegant-swing {
+    0%, 100% { 
+        transform: rotate(0deg) scale(1);
+        transform-origin: center bottom;
+    }
+    25% { 
+        transform: rotate(8deg) scale(1.03);
+        filter: brightness(1.1);
+    }
+    50% { 
+        transform: rotate(0deg) scale(1.06);
+        filter: brightness(1.15);
+    }
+    75% { 
+        transform: rotate(-5deg) scale(1.02);
+        filter: brightness(1.08);
+    }
+}
+
 @keyframes coffee-rotate {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
@@ -477,6 +906,51 @@ button[type="submit"].loading::after {
     display: flex;
     gap: 15px;
     flex-wrap: wrap;
+}
+
+/* Otimização específica para duas opções de café */
+.radio-options {
+    justify-content: space-between;
+}
+
+.radio-options .radio-option:nth-child(1),
+.radio-options .radio-option:nth-child(2) {
+    flex: 1;
+    max-width: 48%; /* Cada opção ocupa quase metade do espaço */
+}
+
+/* Mobile optimization for radio buttons */
+@media (max-width: 600px) {
+    .radio-options {
+        gap: 6px; /* Reduzido de 8px para 6px */
+        justify-content: space-between; /* Distribui os itens igualmente */
+        margin: 0; /* Remove margens extras */
+        padding: 0; /* Remove padding extra */
+    }
+    
+    .radio-option {
+        flex: 1; /* Cada opção ocupa espaço igual */
+        min-width: 0; /* Permite que os itens encolham */
+        padding: 8px 8px; /* Padding mais equilibrado */
+        font-size: 0.9rem; /* Texto ligeiramente menor */
+        text-align: center;
+        justify-content: center;
+        margin: 0; /* Remove margens */
+        background-color: rgba(248, 244, 241, 0.8); /* Fundo mais opaco */
+        border: 1px solid rgba(139, 69, 19, 0.2); /* Borda sutil */
+        max-width: 48%; /* Garante que duas opções caibam lado a lado */
+    }
+    
+    .radio-option:hover {
+        background-color: rgba(240, 230, 224, 0.9);
+    }
+    
+    .radio-option label {
+        font-size: 0.85rem; /* Texto menor para caberem lado a lado */
+        font-weight: 500;
+        margin: 0; /* Remove margens do label */
+        white-space: nowrap; /* Evita quebra de linha */
+    }
 }
 
 .radio-option {
@@ -619,11 +1093,11 @@ button[type="submit"].loading::after {
 }
 
 [data-theme="dark"] .recipe-table tr:nth-child(even) {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.08); /* Mais contraste */
 }
 
 [data-theme="dark"] .recipe-table tr:nth-child(odd) {
-    background-color: rgba(255, 255, 255, 0.02);
+    background-color: rgba(255, 255, 255, 0.04); /* Mais contraste */
 }
 
 .recipe-table tr:hover {
@@ -657,6 +1131,15 @@ button[type="submit"].loading::after {
     cursor: pointer;
     position: relative;
     box-shadow: 0 8px 32px rgba(108, 52, 40, 0.1);
+}
+
+/* Mobile optimization for controls */
+@media (max-width: 600px) {
+    .basic-control,
+    .flavor-control {
+        padding: 10px; /* Reduzido de 12px para 10px */
+        margin-bottom: 6px; /* Reduzido de 10px para 6px */
+    }
 }
 
 [data-theme="dark"] .basic-control,
@@ -752,6 +1235,14 @@ button[type="submit"].loading::after {
     align-items: center;
     justify-content: center;
     gap: 10px; /* Reduzido de 12px */
+}
+
+/* Mobile optimization for timer */
+@media (max-width: 600px) {
+    .timer-container {
+        margin: 6px 0; /* Ainda mais compacto no mobile */
+        gap: 8px; /* Reduzido de 10px para 8px */
+    }
 }
 
 .timer-display-wrapper {
@@ -1131,13 +1622,34 @@ button[type="submit"].loading::after {
 
 /* Dark mode override para melhor contraste */
 [data-theme="dark"] .step-row.active-step {
-    background-color: #4a3728 !important;
-    color: #ffd369 !important;
-    border-left: 5px solid #ffd369;
+    background-color: rgba(255, 182, 73, 0.15) !important; /* Fundo mais claro e dourado */
+    color: #ffffff !important; /* Branco puro */
+    border-left: 5px solid #ffb649; /* Cor mais brilhante */
+    box-shadow: 0 0 10px rgba(255, 182, 73, 0.4); /* Brilho adicional */
+    font-weight: 700; /* Peso maior */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Sombra no texto para melhor legibilidade */
+}
+
+/* Melhor contraste no PWA standalone */
+@media (display-mode: standalone) {
+    [data-theme="dark"] .step-row.active-step {
+        background-color: rgba(255, 182, 73, 0.25) !important; /* Fundo ainda mais claro no PWA */
+        color: #ffffff !important; /* Branco puro garantido */
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); /* Sombra mais forte no PWA */
+        font-weight: 800; /* Peso ainda maior */
+    }
+    
+    [data-theme="dark"] .step-row.active-step td {
+        color: #ffffff !important; /* Garante que todas as células sejam brancas */
+        font-weight: 700; /* Peso forte em todas as células */
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); /* Sombra nas células */
+    }
 }
 
 [data-theme="dark"] .step-row.active-step::after {
-    color: #ffd369;
+    color: #ffb649; /* Cor mais brilhante */
+    font-weight: bold;
+    text-shadow: 0 0 3px rgba(255, 182, 73, 0.8); /* Brilho no ícone */
 }
 
 .step-row.active-step::after {
@@ -1327,6 +1839,13 @@ button[type="submit"].loading::after {
     position: relative;
 }
 
+/* Mobile optimization for sliders */
+@media (max-width: 600px) {
+    .slider-container {
+        margin: 6px 0 6px; /* Ainda mais compacto no mobile */
+    }
+}
+
 .slider-container label {
     display: block;
     margin-bottom: 8px;
@@ -1378,6 +1897,14 @@ button[type="submit"].loading::after {
     font-size: 0.85em;
     color: #6B4423;
     padding: 0 2px;
+}
+
+/* Mobile optimization for slider values */
+@media (max-width: 600px) {
+    .slider-values {
+        margin-bottom: 8px; /* Reduzido de 15px para 8px */
+        font-size: 0.8em; /* Texto ainda menor no mobile */
+    }
 }
 
 .slider-values span {
@@ -1450,15 +1977,16 @@ button[type="submit"].loading::after {
     }
     
     .container {
-        padding: 15px;
+        padding: 15px; /* Reduzido para 15px */
     }
     
     h1 {
-        font-size: 1.5rem;
+        font-size: 1.7rem;
     }
     
     input, select, button {
         font-size: 15px;
+        padding: 12px 14px; /* Reduzido de 14px 16px para 12px 14px */
     }
     
     .recipe-table {
@@ -1474,6 +2002,7 @@ button[type="submit"].loading::after {
     .result {
         box-shadow: 0 2px 8px rgba(139, 69, 19, 0.1);
         padding: 15px;
+        margin-top: 15px; /* Reduzido de 25px para 15px */
     }
     
     .flavor-tags-row {
@@ -1481,25 +2010,21 @@ button[type="submit"].loading::after {
         justify-content: center;
     }
     
-    form {
-        gap: 8px; /* Ainda mais compacto em telas pequenas */
+    /* Otimizações específicas para o espaçamento entre elementos */
+    label, .form-label {
+        margin-bottom: 4px; /* Reduzido de 6px para 4px */
+        font-size: 0.9rem; /* Ligeiramente menor */
     }
     
-    .basic-control,
-    .flavor-control {
-        padding: 10px; /* Ainda mais compacto em telas pequenas */
-        margin-bottom: 8px; /* Ainda mais compacto em telas pequenas */
+    /* Reduz espaçamento entre o título e primeiro elemento */
+    .header-container + form {
+        margin-top: -5px;
     }
     
-    .section-divider {
-        margin: 4px 0; /* Ainda mais compacto em telas pequenas */
+    /* Otimiza espaçamento dos campos de entrada */
+    input, select {
+        margin-bottom: 3px; /* Adiciona um pequeno espaço inferior */
     }
-    
-    .section-divider.solid {
-        margin: 6px 0; /* Ainda mais compacto em telas pequenas */
-    }
-    
-    /* ...existing code... */
 }
 
 /* PWA Styles */
@@ -1544,16 +2069,176 @@ button[type="submit"].loading::after {
 /* PWA Fullscreen adjustments */
 @media (display-mode: standalone) {
     body {
-        padding-top: 10px; /* Menos padding quando em modo app */
+        padding-top: 50px; /* Espaço para barra de status/bateria */
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 10px;
+        background-image: none; /* Remove padrão no PWA */
+        background: rgba(255, 255, 255, 0.4); /* Mesma cor do container */
+        backdrop-filter: blur(15px); /* Mesmo efeito do container */
+        -webkit-backdrop-filter: blur(15px); /* Mesmo efeito do container */
+    }
+    
+    /* Container ocupa toda a tela no PWA */
+    .container {
+        margin-top: 0;
+        padding: 20px;
+        border-radius: 0; /* Remove bordas arredondadas */
+        border: none; /* Remove bordas */
+        box-shadow: none; /* Remove sombra */
+        max-width: none; /* Remove limitação de largura */
+        width: 100%; /* Ocupa toda a largura */
+        background: transparent; /* Transparente para unificar com o body */
+        backdrop-filter: none; /* Remove filtro já que o body tem */
+        -webkit-backdrop-filter: none; /* Remove filtro já que o body tem */
+    }
+    
+    /* Fundo limpo também no tema escuro */
+    [data-theme="dark"] body {
+        background-image: none;
+        background: rgba(26, 26, 26, 0.7); /* Mesma cor do container dark */
+        backdrop-filter: blur(15px); /* Mesmo efeito do container */
+        -webkit-backdrop-filter: blur(15px); /* Mesmo efeito do container */
+    }
+    
+    /* Melhor contraste para controles no PWA dark mode */
+    [data-theme="dark"] .basic-control,
+    [data-theme="dark"] .flavor-control {
+        background: rgba(55, 55, 55, 0.8); /* Mais opaco e claro */
+        border: 1px solid rgba(255, 255, 255, 0.15); /* Borda mais visível */
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); /* Sombra mais forte */
+    }
+    
+    [data-theme="dark"] .control-label {
+        color: #e8e8e8; /* Texto mais claro */
+        font-weight: 600; /* Mais peso para melhor legibilidade */
+    }
+    
+    [data-theme="dark"] .container {
+        border: none;
+        box-shadow: none;
+        background: transparent; /* Transparente para unificar com o body */
+        backdrop-filter: none; /* Remove filtro já que o body tem */
+        -webkit-backdrop-filter: none; /* Remove filtro já que o body tem */
     }
     
     .container {
         margin-top: 0;
+        padding: 20px; /* Reduzido para PWA */
     }
     
     /* Esconder botão de instalação quando já instalado */
     #install-button {
         display: none !important;
+    }
+    
+    /* Otimizações específicas para PWA mobile */
+    @media (max-width: 600px) {
+        body {
+            padding-top: 60px; /* Mais espaço em mobile PWA */
+            padding-left: 0; /* Remove padding lateral */
+            padding-right: 0; /* Remove padding lateral */
+            padding-bottom: 0; /* Remove padding inferior */
+            margin: 0; /* Remove margens */
+        }
+        
+        .container {
+            padding: 15px; /* Padding interno adequado */
+            margin: 0; /* Remove margens */
+            border-radius: 0; /* Totalmente reto */
+            min-height: calc(100vh - 60px); /* Ocupa altura total disponível */
+        }
+        
+        .header-container {
+            margin-bottom: 15px; /* Ainda mais reduzido */
+        }
+        
+        .subtitle-tags {
+            margin-bottom: 12px; /* Espaçamento compacto para PWA mobile */
+        }
+        
+        /* Melhor contraste em PWA mobile dark mode */
+        [data-theme="dark"] .basic-control,
+        [data-theme="dark"] .flavor-control {
+            background: rgba(60, 60, 60, 0.9); /* Ainda mais claro para mobile */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Borda mais forte */
+        }
+        
+        [data-theme="dark"] .control-label {
+            color: #f0f0f0; /* Texto ainda mais claro */
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Sombra de texto para legibilidade */
+        }
+        
+        form {
+            gap: 3px; /* Extremamente compacto */
+        }
+        
+        .basic-control,
+        .flavor-control {
+            padding: 8px; /* Muito compacto */
+            margin-bottom: 4px; /* Muito compacto */
+        }
+        
+        button[type="submit"] {
+            margin: 6px auto; /* Muito compacto */
+            padding: 8px 14px; /* Muito compacto */
+        }
+        
+        .timer-button {
+            margin: 6px auto; /* Consistente com submit button */
+            padding: 8px 14px; /* Consistente com submit button */
+            width: 80%; /* Mesmo width */
+            max-width: 300px; /* Mesmo max-width */
+        }
+        
+        /* Sobrescreve o max-width dos botões específicos no PWA */
+        .reset-button,
+        .continue-button {
+            max-width: 300px; /* Consistente com outros botões */
+        }
+        
+        .result {
+            margin-top: 10px; /* Muito compacto */
+            padding: 12px; /* Muito compacto */
+        }
+        
+        h1 {
+            font-size: 1.8rem; /* Aumentado para melhor visibilidade no PWA */
+            margin-bottom: 4px; /* Ligeiramente maior */
+        }
+        
+        .timer-container {
+            margin: 4px 0; /* Extremamente compacto */
+        }
+        
+        .slider-container {
+            margin: 4px 0 4px; /* Extremamente compacto */
+        }
+        
+        .slider-values {
+            margin-bottom: 6px; /* Muito compacto */
+        }
+    }
+    
+    /* Para dispositivos com notch (iPhone X+) */
+    @supports (padding-top: env(safe-area-inset-top)) {
+        body {
+            padding-top: calc(env(safe-area-inset-top) + 20px);
+        }
+        
+        .container {
+            min-height: calc(100vh - env(safe-area-inset-top) - 20px);
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding-top: calc(env(safe-area-inset-top) + 30px);
+            }
+            
+            .container {
+                min-height: calc(100vh - env(safe-area-inset-top) - 30px);
+            }
+        }
     }
 }
 
@@ -1572,4 +2257,162 @@ button[type="submit"].loading::after {
 @keyframes pwa-loading {
     0% { transform: translateX(-100%); }
     100% { transform: translateX(100%); }
+}
+
+/* Otimizações para dispositivos muito pequenos (iPhone SE, etc.) */
+@media (max-width: 375px) {
+    .container {
+        padding: 10px; /* Ainda mais compacto */
+        border-radius: 12px; /* Bordas menores */
+    }
+    
+    h1 {
+        font-size: 1.5rem; /* Aumentado proporcionalmente */
+        line-height: 1.0;
+    }
+    
+    .coffee-cup-illustration {
+        width: 70px !important; /* Ainda menor */
+        height: 70px !important;
+        margin-bottom: 0; /* Remove margin-bottom */
+    }
+    
+    /* Melhora o layout do header para telas muito pequenas */
+    .header-container {
+        gap: 10px; /* Espaço menor entre imagem e texto */
+    }
+    
+    .header-text {
+        min-width: 0;
+    }
+    
+    /* Otimizações específicas para os tipos de café */
+    .radio-options {
+        gap: 3px; /* Espaço mínimo entre itens */
+        margin: 0;
+        padding: 0;
+    }
+    
+    .radio-option {
+        padding: 5px 4px; /* Extremamente compacto */
+        font-size: 0.75rem;
+        flex: 1 1 48%; /* Otimizado para duas opções */
+        min-width: 0; /* Permite encolhimento total */
+        margin: 0;
+        border-radius: 4px;
+        background-color: rgba(248, 244, 241, 0.9);
+        border: 1px solid rgba(139, 69, 19, 0.25);
+        max-width: 48%; /* Garante que duas opções caibam lado a lado */
+    }
+    
+    .radio-option label {
+        font-size: 0.7rem; /* Muito pequeno para caber */
+        font-weight: 500;
+        line-height: 1.1;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Adiciona ... se o texto não couber */
+    }
+    
+    .radio-option input[type="radio"] {
+        width: 14px; /* Ainda menor */
+        height: 14px; /* Ainda menor */
+        margin-right: 4px; /* Muito pequeno */
+    }
+    
+    .radio-option input[type="radio"]:checked::before {
+        width: 7px; /* Proporcionalmente menor */
+        height: 7px; /* Proporcionalmente menor */
+    }
+    
+    input, select {
+        padding: 10px 12px; /* Mais compacto */
+        font-size: 14px; /* Fonte menor */
+    }
+    
+    button[type="submit"] {
+        padding: 8px 12px; /* Mais compacto */
+        font-size: 16px; /* Mantém acessibilidade */
+    }
+    
+    .timer-button {
+        padding: 8px 12px; /* Consistente com submit button */
+        font-size: 16px; /* Consistente com submit button */
+        width: 80%; /* Mesmo width */
+        max-width: 300px; /* Mesmo max-width */
+    }
+    
+    /* Sobrescreve o max-width dos botões específicos em telas pequenas */
+    .reset-button,
+    .continue-button {
+        max-width: 300px; /* Consistente com outros botões */
+    }
+    
+    .timer-display {
+        font-size: 2.5rem; /* Menor para caber melhor */
+        padding: 10px 16px; /* Mais compacto */
+        min-width: 180px; /* Menor */
+    }
+    
+    /* PWA mode para dispositivos muito pequenos */
+    @media (display-mode: standalone) {
+        body {
+            padding-top: 70px; /* Ainda mais espaço para dispositivos pequenos */
+            padding-left: 0; /* Remove padding lateral */
+            padding-right: 0; /* Remove padding lateral */
+            padding-bottom: 0; /* Remove padding inferior */
+            background-image: none; /* Remove padrão completamente */
+            margin: 0; /* Remove margens */
+        }
+        
+        .container {
+            padding: 12px; /* Padding interno adequado */
+            margin: 0; /* Remove margens */
+            border-radius: 0; /* Totalmente reto */
+            min-height: calc(100vh - 70px); /* Ocupa altura total disponível */
+        }
+        
+        .header-container {
+            margin-bottom: 10px; /* Extremamente compacto */
+            gap: 8px; /* Ainda menor em PWA */
+        }
+        
+        .subtitle-tags {
+            margin-bottom: 10px; /* Espaçamento ainda mais compacto */
+        }
+        
+        /* Contraste máximo para dispositivos pequenos PWA dark mode */
+        [data-theme="dark"] .basic-control,
+        [data-theme="dark"] .flavor-control {
+            background: rgba(70, 70, 70, 0.95); /* Máximo contraste */
+            border: 1px solid rgba(255, 255, 255, 0.25); /* Borda bem visível */
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6); /* Sombra forte */
+        }
+        
+        [data-theme="dark"] .control-label {
+            color: #ffffff; /* Branco puro para máxima legibilidade */
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); /* Sombra mais forte */
+            font-weight: 700; /* Peso máximo */
+        }
+        
+        .radio-options {
+            gap: 2px; /* Mínimo possível em PWA */
+        }
+        
+        .radio-option {
+            padding: 4px 3px; /* Extremamente compacto em PWA */
+        }
+        
+        /* Para dispositivos com notch em telas pequenas */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            body {
+                padding-top: calc(env(safe-area-inset-top) + 40px);
+            }
+            
+            .container {
+                min-height: calc(100vh - env(safe-area-inset-top) - 40px);
+            }
+        }
+    }
 }
