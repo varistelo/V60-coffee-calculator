@@ -1,8 +1,9 @@
-# Calculadora de Café V60
+# ☕ Calculadora de Café V60 (Método 4:6)
 
-Este projeto é uma calculadora web simples desenvolvida especificamente para o método de preparo V60, utilizando o método 4:6. A calculadora permite que os usuários insiram a quantidade desejada de café em mililitros e selecionem o tipo de café (Arábica ou Conilon) para determinar a quantidade apropriada de água necessária para o preparo.
+Este projeto é uma calculadora web/PWA desenvolvida para auxiliar no processo de percolação de café pelo método V60 (4:6).
+Ideal para quem deseja dominar o preparo com medidas precisas e uma experiência prática e intuitiva.
 
-## Funcionalidades
+## ⚙️ Funcionalidades
 
 - Campo de entrada para quantidade de café em mililitros.
 - Opção de seleção para tipo de café (Arábica ou Conilon).
@@ -11,30 +12,84 @@ Este projeto é uma calculadora web simples desenvolvida especificamente para o 
 - Controle do perfil de sabor (Ácido, Equilibrado, Doce).
 - Controle da intensidade (Leve, Médio, Forte).
 - Timer integrado para acompanhar o tempo de extração.
+- **PWA (Progressive Web App)** - Pode ser instalado como aplicativo nativo.
+- **Modo escuro automático** - Segue a preferência do sistema operacional.
+- **Funcionamento offline** - Funciona sem conexão à internet após primeira visita.
 
-## Arquivos
+## 📱 PWA - Progressive Web App
 
-- **index.html**: O documento HTML principal contendo a estrutura completa da calculadora de café.
-- **calculadora-v60.html**: Versão simplificada da calculadora para uso rápido.
+### PWA
+Este app pode ser instalado diretamente no seu dispositivo (celular, tablet ou computador) funcionando como um app nativo.
+
+### Como Instalar:
+
+#### 📱 **Android (Chrome/Edge/Opera):**
+1. Acesse o site via web [https://coffee.varistelo.com.br/](https://coffee.varistelo.com.br/)
+2. Toque no menu do navegador (3 pontinhos)
+3. Selecione "Instalar app" ou "Adicionar à tela inicial"
+4. Confirme a instalação
+
+#### 🍎 **iPhone/iPad (Safari):**
+1. Acesse o site via web [https://coffee.varistelo.com.br/](https://coffee.varistelo.com.br/)
+2. Toque no botão de compartilhar (quadrado com seta)
+3. Selecione "Adicionar à Tela de Início"
+4. Confirme tocando em "Adicionar"
+
+#### 💻 **Desktop (Chrome/Edge/Opera):**
+1. Acesse o site da calculadora
+2. Procure pelo ícone de instalação na barra de endereços
+3. Clique em "Instalar" na barra de endereços
+4. Ou use o menu: Mais ferramentas → Instalar [nome do app]
+
+#### 🖥️ **Windows:**
+- Após instalado, aparecerá no Menu Iniciar e pode ser fixado na barra de tarefas
+
+#### 🍎 **macOS:**
+- Após instalado, aparecerá no Launchpad e pode ser adicionado ao Dock
+
+### Vantagens do PWA:
+- ✅ **Funcionamento offline** após primeira visita
+- ✅ **Inicialização rápida** como app nativo
+- ✅ **Sem atualizações manuais** - sempre a versão mais recente
+- ✅ **Menos espaço** que apps tradicionais
+- ✅ **Interface otimizada** para dispositivos móveis
+- ✅ **Acesso rápido** direto da tela inicial
+
+
+## 📁 Arquivos do projeto
+
+- **index.html**: O documento HTML principal contendo a estrutura completa da calculadora
 - **css/style.css**: Estilos para a página web garantindo um layout visualmente atraente e responsivo.
 - **js/calculator.js**: Lógica JavaScript que gerencia as entradas do usuário e realiza os cálculos.
+- **manifest.json**: Configuração do PWA para instalação como app nativo.
+- **service-worker.js**: Script para funcionamento offline e cache de recursos.
 
-## Como Usar
+## 🚀 Como Usar
 
-1. Abra o `index.html` em um navegador web.
+1. Acesse [https://coffee.varistelo.com.br/](https://coffee.varistelo.com.br/). Instale como PWA, ou abra o `index.html` em um navegador web.
 2. Insira a quantidade desejada de café em mililitros.
 3. Selecione o tipo de café (Arábica ou Conilon).
 4. Ajuste os controles de sabor e intensidade conforme preferência.
 5. Clique em "Calcular".
 6. Siga as instruções de preparo e use o timer integrado para controlar os tempos de despejo.
 
-## Instalação
+### 🎨 **Temas**
+- **Modo escuro**: Triple-clique na imagem do V60 para alternar tema
+
+## 💾 Instalação para Desenvolvimento
 
 Para executar a calculadora de café localmente:
 
-1. Clone o repositório para sua máquina local.
-2. Navegue até o diretório do projeto.
+1. Clone o repositório para sua máquina local:
+   ```bash
+   git clone [URL_DO_REPOSITORIO]
+   ```
+2. Navegue até o diretório do projeto:
+   ```bash
+   cd v60-coffee-calculator
+   ```
 3. Abra o arquivo `index.html` em seu navegador preferido.
+
 
 ## Licença
 
