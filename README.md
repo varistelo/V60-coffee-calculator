@@ -1,6 +1,6 @@
 # ☕ Calculadora de Café V60 (Método 4:6)
 
-Este projeto é uma calculadora web/PWA desenvolvida para auxiliar no processo de percolação de café pelo método V60 (4:6).
+Este projeto é uma calculadora WEB/WPA desenvolvida para auxiliar no processo de percolação de café pelo método V60 (4:6).
 Ideal para quem deseja dominar o preparo com medidas precisas e uma experiência prática e intuitiva.
 
 ## ⚙️ Funcionalidades
